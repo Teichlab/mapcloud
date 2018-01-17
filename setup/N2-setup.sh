@@ -9,8 +9,9 @@
 #volumes, create, name it something informative, size 2048gb
 #once spawned, press the little arrow on the far right of the volume's row and attach to the created instance
 
-#add internal.sanger.ac.uk to where this file looks for things
-#(yes, we changed this while doing the snapshot setup, but it gets undone when a new instance spawns)
+#need to configure the internal.sanger.ac.uk thing again, this time more aggressively
+#as things go south for some reason when snapshotting happens
+echo 'supersede domain-name "internal.sanger.ac.uk"' | sudo tee -a /etc/dhcp/dhclient.conf
 sudo sed 's/search openstacklocal/search openstacklocal internal.sanger.ac.uk/g' -i /etc/resolv.conf
 
 #setting up the mount in /mnt

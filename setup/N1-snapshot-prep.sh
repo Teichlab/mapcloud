@@ -19,18 +19,19 @@ wget ftp://ftp.renci.org/pub/irods/releases/4.1.10/ubuntu14/irods-dev-4.1.10-ubu
 sudo dpkg -i irods-icommands-4.1.10-ubuntu14-x86_64.deb irods-runtime-4.1.10-ubuntu14-x86_64.deb irods-dev-4.1.10-ubuntu14-x86_64.deb
 sudo apt-get -y -f install && rm *.deb
 #nick configuration from the farm
-scp -r kp9@farm3-login.internal.sanger.ac.uk:/nfs/users/nfs_k/kp9/.irods ~/.irods
+rsync -Pr kp9@farm3-login.internal.sanger.ac.uk:/nfs/users/nfs_k/kp9/.irods ~
 #delete the last line of the configuration file, which is some farm weirdness and doesn't apply here
 sed ':a;N;$!ba;s/,\n    "irods_plugins_home" : "\/opt\/renci\/icommands\/plugins\/"//g' -i ~/.irods/irods_environment.json
 #add internal.sanger.ac.uk to where this file looks for things
 sudo sed 's/search openstacklocal/search openstacklocal internal.sanger.ac.uk/g' -i /etc/resolv.conf
-#finish setting up irods by going iinit and typing the password. boom. done.
+#now just feed in your password. boom. done
+iinit
 
 #cellranger prep! ho! version 2.0.2 with a GRCh38 1.2.0 reference
 mkdir ~/cellranger && cd ~/cellranger
 #originally this would be downloaded from 10X themselves, but they don't offer archival downloads
-scp kp9@farm3-login.internal.sanger.ac.uk:/software/solexa/pkg/cellranger/2.0.2/dist/cellranger-2.0.2.tar.gz .
-scp kp9@farm3-login.internal.sanger.ac.uk:/nfs/srpipe_references/downloaded_from_10X/refdata-cellranger-GRCh38-1.2.0.tar.gz.download GRCh38.tar.gz
+rsync -P kp9@farm3-login.internal.sanger.ac.uk:/software/solexa/pkg/cellranger/2.0.2/dist/cellranger-2.0.2.tar.gz .
+rsync -P kp9@farm3-login.internal.sanger.ac.uk:/nfs/srpipe_references/downloaded_from_10X/refdata-cellranger-GRCh38-1.2.0.tar.gz.download GRCh38.tar.gz
 tar -xzvf cellranger-2.0.2.tar.gz && tar -xzvf GRCh38.tar.gz && sudo rm *.tar.gz
 #move the GRCh38 reference to a folder called GRCh38 for ease of script access later
 mv refdata-cellranger-GRCh38-1.2.0/ GRCh38/
@@ -38,7 +39,7 @@ mv refdata-cellranger-GRCh38-1.2.0/ GRCh38/
 #custom-made GRCh37.75 reference. needs GTF and genome FASTA
 wget ftp://ftp.ensembl.org/pub/release-75/gtf/homo_sapiens/Homo_sapiens.GRCh37.75.gtf.gz
 gunzip Homo_sapiens.GRCh37.75.gtf.gz
-scp kp9@farm3-login.internal.sanger.ac.uk:/lustre/scratch117/cellgen/team205/FetalCellAtlas/remapV2/genome.fa .
+rsync -P kp9@farm3-login.internal.sanger.ac.uk:/lustre/scratch117/cellgen/team205/FetalCellAtlas/remapV2/genome.fa .
 #filter the GTF to begin with, then construct the reference
 ~/cellranger/cellranger-2.0.2/cellranger mkgtf Homo_sapiens.GRCh37.75.gtf Homo_sapiens.GRCh37.75.filtered.gtf \
                    --attribute=gene_biotype:protein_coding \
@@ -61,25 +62,20 @@ scp kp9@farm3-login.internal.sanger.ac.uk:/lustre/scratch117/cellgen/team205/Fet
 rm genome.fa && rm *.gtf
 
 #set up bamcollate2 and samtools for processing CRAM files
-#bamcollate2 depends on libmaus2
-cd ~ && wget https://github.com/gt1/libmaus2/archive/2.0.348-release-20170703154532.tar.gz
-tar -xzvf 2.0.348-release-20170703154532.tar.gz && rm 2.0.348-release-20170703154532.tar.gz
-mv libmaus2-2.0.348-release-20170703154532 libmaus2 && cd libmaus2
-./configure && make && sudo make install
+#bamcollate2 and libmaus2 are not super nice when compiled from source, but can be apt-getted apparently
+sudo add-apt-repository -y ppa:gt1/staden-io-lib-trunk-tischler
+sudo add-apt-repository -y ppa:gt1/libmaus2
+sudo add-apt-repository -y ppa:gt1/biobambam2
+sudo apt-get update && sudo apt-get -y install libmaus2-dev biobambam2
 
-#for some reason, the only way to get bamcollate working is by grabbing a binary
-cd ~ && wget https://github.com/gt1/biobambam2/releases/download/2.0.73-release-20170620145717/biobambam2-2.0.73-release-20170620145717-x86_64-etch-linux-gnu.tar.gz
-tar -xzvf biobambam2-2.0.73-release-20170620145717-x86_64-etch-linux-gnu.tar.gz && rm biobambam2-2.0.73-release-20170620145717-x86_64-etch-linux-gnu.tar.gz 
-mv biobambam2 biobambam2hold && mv biobambam2hold/2.0.73-release-20170620145717/x86_64-etch-linux-gnu/ biobambam2 && rm -r biobambam2hold
-
-#bamcollate is slow and not particularly good at using resources
+#bamcollate2 is slow and not particularly good at using resources
 #so let's run a bunch of those in parallel to speed the proceedings using this thing up a notch. bam!
 sudo apt-get -y install parallel
 
 #we also need samtools, fresh ones with CRAM support
 #and in turn, samtools wants htslib present
 cd ~ && git clone https://github.com/samtools/htslib && cd htslib
-sudo apt-get -y install libbz2-dev liblzma-dev
+sudo apt-get -y install libbz2-dev liblzma-dev libcurl4-openssl-dev
 autoheader
 autoconf
 ./configure
@@ -90,11 +86,16 @@ sudo make install
 #so now we can get samtools proper going
 cd ~ && git clone https://github.com/samtools/samtools && cd samtools
 sudo apt-get -y install libncurses5-dev
+#ignore the warning autoheader spits out
+autoheader
 autoconf -Wno-syntax
 ./configure
 make
 sudo make install
 #leave this just in case, you never know
+
+#pre-download the CRAM cache as this is always going to be relevant
+cd ~ && iget -K /seq/24013/24013_1#1.cram && samtools collate 24013_1#1.cram test && rm *am
 
 #set stuff up for smartseq2 - STAR and HTSeq
 #STAR lives in ~/cellranger/cellranger-2.0.2/STAR/2.5.1b/STAR
@@ -106,11 +107,11 @@ echo "deb https://cran.ma.imperial.ac.uk/bin/linux/ubuntu trusty/" | sudo tee -a
 #then add the corresponding apt key using this call
 #sometimes fails because reasons, just call it again in that case
 sudo apt-key adv --keyserver keyserver.ubuntu.com --recv-keys E084DAB9
-#good enough, let's install R, and version control it just in case
-sudo apt-get update && sudo apt-get -y install r-base-core=3.4.2-1trusty1
+#good enough, let's install R but screw version controlling it as it refuses to install 3.4.2
+sudo apt-get update && sudo apt-get -y install r-base
 
 #deal with Seurat's mountain of dependencies, some of which are external and quiet about it
-sudo apt-get -y install libcurl4-openssl-dev libxml2-dev openjdk-7-jdk
+sudo apt-get -y install libxml2-dev openjdk-7-jdk
 #and now setting up internal R dependencies!
 sudo R -e 'source("https://bioconductor.org/biocLite.R"); biocLite(c("edgeR","BiocParallel"));  install.packages("devtools", repos="https://cran.ma.imperial.ac.uk/"); devtools::install_version("Seurat", version="2.1.0", repos="https://cran.ma.imperial.ac.uk/")'
 
@@ -119,7 +120,12 @@ cd ~ && git clone https://github.com/TimothyTickle/hca-jamboree-cell-identificat
 cd hca-jamboree-cell-identification/src/poisson_model && sudo R CMD INSTALL package
 cd ~ && sudo rm -r hca-jamboree-cell-identification
 
-#nano ~/.sshpass and put ssh password in there
+#configure git in case gitting needs to happen
+git config --global user.name ktpolanski
+git config --global user.email krzysztof_polanski@o2.pl
+
+#park ssh password here
+nano ~/.sshpass
 
 #with that, the cloud is almost ready for picture day!
 #just need to comment out a thing that happens when a new cloud gets spun up in /etc/fstab
@@ -128,4 +134,5 @@ sudo sed 's/\/dev\/vdb/#\/dev\/vdb/g' -i /etc/fstab
 
 #go back to delta, instances, create snapshot of the instance, name it something useful (mapcloud here)
 #once it saves, ssh back into the instance you snapshotted and undo the commenting out you just did
+#if the instance becomes inaccessible, go back to delta and hard reboot it
 sudo sed 's/#\/dev\/vdb/\/dev\/vdb/g' -i /etc/fstab

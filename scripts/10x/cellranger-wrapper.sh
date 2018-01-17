@@ -24,7 +24,7 @@ fi
 #a couple quick substitutions to actually turn the imeta dump into a bunch of igets
 #turn all '----\ncollection:' into 'iget'
 #turn all '\ndataObj: ' into '/'
-sed ':a;N;$!ba;s/----\ncollection:/iget/g' -i imeta.sh
+sed ':a;N;$!ba;s/----\ncollection:/iget -K/g' -i imeta.sh
 sed ':a;N;$!ba;s/\ndataObj: /\//g' -i imeta.sh
 
 #time to get downloading
@@ -36,7 +36,7 @@ rm imeta.sh
 #kick out the unmapped as we don't care; -f so that this doesn't break if this file doesn't exist
 rm -f *#888.cram
 
-if [[ $2 == cram ]]
+if [[ $1 == cram ]]
 then
 	#process the CRAMs into FASTQs
 	parallel bash /mnt/mapcloud/scripts/10x/bamcollatewrapper.sh ::: *.cram
@@ -71,7 +71,7 @@ mv *.fastq.gz fastq
 rm *.cram
 
 #cellranger proper!
-~/cellranger/cellranger-2.0.2/cellranger count --id=$4 --fastqs=fastq --transcriptome=~/cellranger/$1
+~/cellranger/cellranger-2.0.2/cellranger count --id=$4 --fastqs=fastq --transcriptome=~/cellranger/$2
 
 #leave the fastq input and complete output available to be dealt with in whatever manner
 
