@@ -11,7 +11,7 @@
 
 #need to configure the internal.sanger.ac.uk thing again, this time more aggressively
 #as things go south for some reason when snapshotting happens
-echo 'supersede domain-name "internal.sanger.ac.uk"' | sudo tee -a /etc/dhcp/dhclient.conf
+echo 'supersede domain-name "internal.sanger.ac.uk";' | sudo tee -a /etc/dhcp/dhclient.conf
 sudo sed 's/search openstacklocal/search openstacklocal internal.sanger.ac.uk/g' -i /etc/resolv.conf
 
 #setting up the mount in /mnt
