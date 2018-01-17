@@ -9,7 +9,7 @@ do
 	bash /mnt/mapcloud/scripts/ss2/star-htseq.sh GRCh37 $RUNLANE
 	
 	#this creates a $RUNLANE output folder. copy it over! specify where below
-	sshpass -f ~/.sshpass scp -r $RUNLANE kp9@farm3-login.internal.sanger.ac.uk:/lustre/scratch117/cellgen/team205/
+	sshpass -f ~/.sshpass rsync -Pr $RUNLANE kp9@farm3-login.internal.sanger.ac.uk:/lustre/scratch117/cellgen/team205/
 	
 	#and now that we copied over the results, time to burn the input/output to the ground and start anew
 	rm -r $RUNLANE

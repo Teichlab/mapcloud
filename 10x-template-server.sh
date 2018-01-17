@@ -17,7 +17,7 @@ do
 	#Rscript /mnt/mapcloud/scripts/10x/emptydrops.R $SAMPLE $REFERENCE
 	
 	#and now that we ran cellranger, we can toss it over to the farm for safekeeping. specify where below
-	sshpass -f ~/.sshpass scp -r $SAMPLE kp9@farm3-login.internal.sanger.ac.uk:/lustre/scratch117/cellgen/team205/
+	sshpass -f ~/.sshpass rsync -Pr $SAMPLE kp9@farm3-login.internal.sanger.ac.uk:/lustre/scratch117/cellgen/team205/
 	
 	#and now that we copied over the results, time to burn the input/output to the ground and start anew
 	rm -r fastq
