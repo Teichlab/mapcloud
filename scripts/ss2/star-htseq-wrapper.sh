@@ -18,10 +18,7 @@ mv sampleInfo.txt outs
 #now we can loop over the CRAMs and do the mapping and stuff
 #start off by making them be FASTQ
 mkdir fastq
-mkdir collbams
 parallel bash /mnt/mapcloud/scripts/ss2/cramfastq.sh ::: *.cram
-#we can discard the BAMs as we don't need those anymore
-rm -r collbams
 
 mkdir STAR
 for FID in *.cram
