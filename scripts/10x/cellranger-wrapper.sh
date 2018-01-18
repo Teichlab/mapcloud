@@ -39,7 +39,7 @@ rm -f *#888.cram
 if [[ $1 == cram ]]
 then
 	#process the CRAMs into FASTQs
-	parallel bash /mnt/mapcloud/scripts/10x/bamcollatewrapper.sh ::: *.cram
+	parallel bash /mnt/mapcloud/scripts/10x/cramfastq.sh ::: *.cram
 
 	#rename the resulting FASTQ files to be cellranger input friendly
 	#we're starting off with a file named like this: 22288_1#1.cram_I1_001.fastq.gz

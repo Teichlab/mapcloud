@@ -9,11 +9,6 @@
 #volumes, create, name it something informative, size 2048gb
 #once spawned, press the little arrow on the far right of the volume's row and attach to the created instance
 
-#need to configure the internal.sanger.ac.uk thing again, this time more aggressively
-#as things go south for some reason when snapshotting happens
-echo 'supersede domain-name "internal.sanger.ac.uk";' | sudo tee -a /etc/dhcp/dhclient.conf
-sudo sed 's/search openstacklocal/search openstacklocal internal.sanger.ac.uk/g' -i /etc/resolv.conf
-
 #setting up the mount in /mnt
 sudo mkfs.ext4 /dev/vdb
 sudo mount /dev/vdb /mnt
@@ -28,3 +23,10 @@ cd /mnt && dd if=/dev/zero of=deleteme oflag=direct bs=1M count=1024 && rm delet
 
 #acquire the code to do things with!
 cd /mnt && git clone https://github.com/Teichlab/mapcloud
+
+#need to configure the internal.sanger.ac.uk thing again, this time more aggressively
+#as things go heavily south for some reason when snapshotting happens
+echo 'supersede domain-name "internal.sanger.ac.uk";' | sudo tee -a /etc/dhcp/dhclient.conf
+sudo dhclient -r
+sudo reboot & ( sleep 30; echo 'b' > /proc/sysrq-trigger )
+#this restarts the thing. ssh back in
