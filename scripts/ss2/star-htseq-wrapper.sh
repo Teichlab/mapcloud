@@ -11,9 +11,14 @@ bash /mnt/mapcloud/scripts/ss2/dump_irods.sh $2
 #and a sampleInfo.txt file with conventionally named samples
 
 #the sampleInfo file is an actual piece of output
+#but it might be occasionally littered with yhuman garbanzo. lose that
 cd $2
 mkdir outs
-mv sampleInfo.txt outs
+grep -v 'yhuman' sampleInfo.txt > outs/sampleInfo.txt
+rm sampleInfo.txt
+
+#so, as mentioned, yhuman is not the best. just torch it if spotted
+rm -f *yhuman*
 
 #now we can loop over the CRAMs and do the mapping and stuff
 #start off by making them be FASTQ
