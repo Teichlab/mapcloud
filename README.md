@@ -12,7 +12,7 @@ Using the scripts is quite straightforward. Start off by following the setup ins
 *	Local output stores the `filtered_gene_bc_matrices` folder as `cellranger` in a folder named after the sample, if EmptyDrops was ran `final-count-matrix` is copied into that folder
 
 **Smart-seq2 Pipeline:**
-*	**Input:** RUN_LANE combinations identifying all your plates; GRCh37/38 choice of reference
+*	**Input:** RUN_LANE combinations identifying all your plates (e.g. 24013_1); GRCh37/38 choice of reference
 *	Downloads CRAM from iRODS, converts CRAM to FASTQ
 *	Downloads all of the iRODS metadata, extracts the `sample_supplier_name` field and creates a map of CRAM file to the resulting values in `outs/sampleInfo.txt`
 *	Aligns the data with STAR (version 2.5.1b, shipped with Cell Ranger 2.0.2)

@@ -1,6 +1,8 @@
 #!/bin/bash
 set -e
 
+#set your file type here: cram or fastq
+FILETYPE=cram
 #set your reference here: GRCh37 or GRCh38
 REFERENCE=GRCh37
 
@@ -11,7 +13,7 @@ do
 	#and GRCh37/GRCh38 reference choice as argument 2. arguments 3+4 form an imeta query pair
 	#you can optionally provide a second one to refine the search if needed in 5+6
 	#argument 4 will be used for naming the cellranger output files
-	bash /mnt/mapcloud/scripts/10x/cellranger-wrapper.sh cram $REFERENCE sample $SAMPLE
+	bash /mnt/mapcloud/scripts/10x/cellranger-wrapper.sh $FILETYPE $REFERENCE sample $SAMPLE
 	
 	#EmptyDrops droplet calling, FCA style. comment out if unwanted
 	#Rscript /mnt/mapcloud/scripts/10x/emptydrops.R $SAMPLE $REFERENCE

@@ -1,12 +1,15 @@
 #!/bin/bash
 set -e
 
+#set your reference here: GRCh37 or GRCh38
+REFERENCE=GRCh37
+
 #loop over run_lane combinations, e.g. 24013_1
 for RUNLANE in 
 do
 	#call the pipeline proper
 	#you can swap between GRCh37 and GRCh38, needs to be the first argument
-	bash /mnt/mapcloud/scripts/ss2/star-htseq-wrapper.sh GRCh37 $RUNLANE
+	bash /mnt/mapcloud/scripts/ss2/star-htseq-wrapper.sh $REFERENCE $RUNLANE
 	
 	#the actual output lives in $RUNLANE/outs
 	mv $RUNLANE/outs holder-output
@@ -17,4 +20,3 @@ do
 	#...and safekeep the results
 	mv holder-output $RUNLANE
 done
-
