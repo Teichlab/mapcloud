@@ -23,7 +23,7 @@ do
 	mv $SAMPLE/outs/web_summary.html output-holder/cellranger
 	if [ -d $SAMPLE/outs/final-count-matrix ]
 	then
-		mv $SAMPLE/outs/final-count-matrix output-holder/cellranger
+		mv $SAMPLE/outs/final-count-matrix output-holder
 	fi
 	
 	#and now that we copied over the results, time to burn the input/output to the ground and start anew
