@@ -31,7 +31,7 @@ do
 	#set up STAR output directory and run STAR itself
 	mkdir STAR/$FID && cd STAR/$FID
 	~/cellranger/cellranger-2.0.2/STAR/2.5.1b/STAR --runMode alignReads \
-	--runThreadN 28 \
+	--runThreadN `grep -c ^processor /proc/cpuinfo` \
 	--genomeDir ~/cellranger/$1/star \
 	--readFilesIn ../../fastq/$FID-1.fastq.gz ../../fastq/$FID-2.fastq.gz \
 	--outSAMtype BAM SortedByCoordinate \
