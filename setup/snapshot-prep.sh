@@ -91,6 +91,12 @@ gunzip dbsnp_138.hg19.protein_coding.recode.dedupped.vcf.gz
 #kick out all the chr to make it be consistent with the cellranger reference
 sed 's/chr//g' -i dbsnp_138.hg19.protein_coding.recode.dedupped.vcf
 
+#increase file cap so demultiplexing 10X works in the genomics
+echo '## Example hard limit for max opened files' | sudo tee -a /etc/security/limits.conf
+echo 'ubuntu        hard nofile 131072' | sudo tee -a /etc/security/limits.conf
+echo '## Example soft limit for max opened files' | sudo tee -a /etc/security/limits.conf
+echo 'ubuntu        soft nofile 131072' | sudo tee -a /etc/security/limits.conf
+
 #with that, the cloud is almost ready for picture day!
 #just need to comment out a thing that happens when a new cloud gets spun up in /etc/fstab
 #as if it isn't undone, making a cloud from the snapshot will try to find a mount, fail and die
