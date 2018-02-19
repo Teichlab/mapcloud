@@ -5,7 +5,7 @@ This bit of text is going to detail the second available cloud snapshot, mapclou
 * **Cell Ranger** (v2.0.2 for internal consistency) plus references: 10X GRCh38 1.2.0 release and a custom-built GRCh37.75 consistent with the above in terms of GTF `gene_biotype` filtering
 * **salmon, kallisto** with GRCh38+ERCC and GRCm38+ERCC references
 * **HTSeq** for STAR+HTSeq SS2 analysis; the pipeline uses the exact STAR version shipped with Cell Ranger and the references' SA indices for analysis consistency
-* **st_pipeline** for STAR+HTSeq analysis of spatial transcriptomics data generated using KTH technology
+* **st_pipeline** for STAR+HTSeq analysis of spatial transcriptomics data generated using SciLifeLab technology
 * **VCF with SNPs for all protein coding genes** for use with 10X/SS2 GRCh37 mapping only
 * **automated pipeline code base** for 10X/SS2/spatial transcriptomics analysis, plus per-cell donor genotype calling
 
@@ -42,7 +42,7 @@ You still have to go through all the same motions as with basecloud when setting
 	-	`outs/countMatrixNames.txt` tags the cells by the `sample_supplier_name` metadata
 	-	`outs/countMatrix.txt` tags the cells by the CRAM file name
 	-	`outs/uniqueMappedPercent.txt` captures the unique STAR mapping percentage
-* Optionally runs the genotyping pipeline, creating a `.vcf` file named after the RUN_LANE combination in `outs`; only works with a GRCh37 reference
+* Optionally runs the genotyping pipeline, creating `snpCalls.vcf` and `snpCallsNames.vcf` file in `outs`; only works with a GRCh37 reference
 * Local output stores the `outs` folder and drops the STAR alignments, complete HTSeq output and iRODS metadata dump
 
 ### Spatial transcriptomics pipeline

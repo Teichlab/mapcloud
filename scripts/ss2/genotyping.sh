@@ -42,7 +42,9 @@ do
 done
 #merge the individual VCF files
 cd ..
-bcftools merge -Ov --threads `grep -c ^processor /proc/cpuinfo` -o outs/$1.vcf genotyping-singlecell-vcfs/*.vcf.gz
+bcftools merge -Ov --threads `grep -c ^processor /proc/cpuinfo` -o outs/snpCalls.vcf genotyping-singlecell-vcfs/*.vcf.gz
+#add cell names to it via another hardcoded python script
+python3 /mnt/mapcloud/scripts/ss2/celltranslate-genotyping.py
 
 #snps.vcf has done its job
 rm snps.vcf
