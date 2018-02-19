@@ -2,11 +2,23 @@
 set -e
 
 #set your remote path to transfer the results to here
-REMOTEDIR=kp9@farm3-login.internal.sanger.ac.uk:/lustre/scratch117/cellgen/team205/10x-runs
+REMOTEDIR=$SSHNAME@farm3-login.internal.sanger.ac.uk:/lustre/scratch117/cellgen/team205
 #set your file type here: cram or fastq
 FILETYPE=cram
 #set your reference here: GRCh37 or GRCh38
 REFERENCE=GRCh37
+#set your VCF creation here (ignore if you're not doing the genotyping): 
+#0 to use all the protein coding SNPs,
+#a nonzero integer to use the SNPs for the top N expressed genes for your sample,
+#a file path to use the SNPs from that file
+VCF=1000
+
+#assert that $SSHNAME needs to exist
+if [ -z ${SSHNAME+x} ]
+then
+	echo "The \$SSHNAME variable is not set, cannot transfer files to server. Check https://github.com/Teichlab/mapcloud for setup details."
+	exit 1
+fi
 
 #loop over all the samples you want mapped
 for SAMPLE in 
@@ -19,6 +31,10 @@ do
 	
 	#EmptyDrops droplet calling, FCA style. comment out if unwanted
 	#Rscript /mnt/mapcloud/scripts/10x/emptydrops.R $SAMPLE $REFERENCE
+	
+	#genotyping script. comment out if unwanted
+	#ONLY WORKS WITH A GRCh37 REFERENCE
+	#bash /mnt/mapcloud/scripts/10x/genotyping.sh $SAMPLE $VCF
 	
 	#and now that we ran cellranger, we can toss it over to the farm for safekeeping. specify where below
 	sshpass -f ~/.sshpass rsync -Pr $SAMPLE $REMOTEDIR

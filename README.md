@@ -21,7 +21,7 @@ You create a mapcloud just like you would a basecloud, but you select the mapclo
 
 You still have to go through all the same motions as with basecloud when setting one of these up, plus a couple extra steps if you wish to use the pipelines contained within this repository (such as actually getting the code). The pipelines make use of the `$SSHNAME` system variable for minimum fuss automated result transfer to the farm, so if you foresee yourself using the mode wherein the complete output is automatically copied over to Lustre for safekeeping then call the code snippet below, subbing in your Sanger user ID, and store your farm login password in `~/.sshpass`. You're the only person on here so it's not going anywhere, don't worry.
 
-	printf 'export SSH_NAME=<user-id>\n' >> ~/.bashrc && exec bash
+	printf 'export SSHNAME=<user-id>\n' >> ~/.bashrc && exec bash
 	cd /mnt && git clone https://github.com/Teichlab/mapcloud
 
 ### 10X pipeline

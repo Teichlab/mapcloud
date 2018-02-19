@@ -5,6 +5,11 @@ set -e
 FILETYPE=cram
 #set your reference here: GRCh37 or GRCh38
 REFERENCE=GRCh37
+#set your VCF creation here (ignore if you're not doing the genotyping): 
+#0 to use all the protein coding SNPs,
+#a nonzero integer to use the SNPs for the top N expressed genes for your sample,
+#a file path to use the SNPs from that file
+VCF=1000
 
 #loop over all the samples you want mapped
 for SAMPLE in 
@@ -18,14 +23,22 @@ do
 	#EmptyDrops droplet calling, FCA style. comment out if unwanted
 	#Rscript /mnt/mapcloud/scripts/10x/emptydrops.R $SAMPLE $REFERENCE
 	
+	#genotyping script. comment out if unwanted
+	#ONLY WORKS WITH A GRCh37 REFERENCE
+	#bash /mnt/mapcloud/scripts/10x/genotyping.sh $SAMPLE $VCF
+	
 	#save small selection of output locally instead of dumping the whole thing on the farm
-	#save EmptyDrops results too if those got made
+	#save EmptyDrops/genotyping results too if those got made
 	mkdir output-holder
 	mv $SAMPLE/outs/filtered_gene_bc_matrices/$REFERENCE output-holder/cellranger
 	mv $SAMPLE/outs/web_summary.html output-holder/cellranger
 	if [ -d $SAMPLE/outs/final-count-matrix ]
 	then
 		mv $SAMPLE/outs/final-count-matrix output-holder
+	fi
+	if [ -f $SAMPLE/outs/$SAMPLE.vcf ]
+	then
+		mv $SAMPLE/outs/$SAMPLE.vcf output-holder
 	fi
 	
 	#and now that we copied over the results, time to burn the input/output to the ground and start anew
