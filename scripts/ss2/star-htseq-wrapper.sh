@@ -49,7 +49,7 @@ done
 rm -r fastq
 #and now parallelise HTSeq as it sees the need to import the index from scratch each time
 #so this gives quite a performance boost
-parallel bash /mnt/mapcloud/scripts/ss2/htseq.sh ::: *.cram
+parallel bash /mnt/mapcloud/scripts/ss2/htseq.sh ::: *.cram ::: $1
 
 #the HTSeq reports feature some QC-like lines at the end, let's not use those when making the count matrix
 #but first, let's obtain the gene IDs (from the first HTSeq results file) and prepare the file
