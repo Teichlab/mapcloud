@@ -53,7 +53,15 @@ parallel bash /mnt/mapcloud/scripts/ss2/htseq.sh ::: *.cram ::: $1
 
 #the HTSeq reports feature some QC-like lines at the end, let's not use those when making the count matrix
 #but first, let's obtain the gene IDs (from the first HTSeq results file) and prepare the file
-grep -v '_' STAR/`ls *.cram | head -n 1`/HTSeq_count.txt | cut -f 1 > outs/counthold.txt
+#(account for the possibility of empty HTSeq_count.txt files in the case of empty BAMs)
+for FID in *.cram
+do
+	if [[ `wc -l <STAR/$FID/HTSeq_count.txt` > 0 ]]
+	then
+		grep -v '_' STAR/$FID/HTSeq_count.txt | cut -f 1 > outs/counthold.txt
+		break
+	fi
+done
 #and also prepare the thing that will hold cell names, I guess
 printf 'ENSG' > outs/cellhold.txt
 
@@ -70,6 +78,11 @@ do
 	mapprct="$(grep 'Uniquely mapped reads %' STAR/$FID/Log.final.out | sed 's/.*|//g' | tr -d '[:space:]')"
 	printf "%s\t%s\n" $cellname $mapprct >> outs/uniqueMappedPercent.txt
 done
+
+#account for empty HTSeq_count.txt files, which will manifest as empty spaces in the file
+#so either multiple sequences of tabs in a row, or a tab and end of file
+sed ':a; s/\t\t/\t0\t/g; ta' -i outs/counthold.txt
+sed 's/\t$/\t0/g' -i outs/counthold.txt
 
 #convert the cell names to the actual names, courtesy of a helper hard-wired python script
 python3 /mnt/mapcloud/scripts/ss2/celltranslate.py
