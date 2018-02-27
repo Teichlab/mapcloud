@@ -20,6 +20,13 @@ then
 	exit 1
 fi
 
+#assert that the password file is there
+if [ ! -f ~/.sshpass ]
+then
+	echo "~/.sshpass does not exist. Create it and put your SSH password there."
+	exit 1
+fi
+
 #loop over all the samples you want mapped
 for SAMPLE in 
 do

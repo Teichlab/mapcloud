@@ -2,7 +2,7 @@
 set -e
 
 #set your remote path to transfer the results to here
-REMOTEDIR=$SSHNAME@farm3-login.internal.sanger.ac.uk:/lustre/scratch117/cellgen/team205/10x-runs
+REMOTEDIR=$SSHNAME@farm3-login.internal.sanger.ac.uk:/lustre/scratch117/cellgen/team205
 #set your reference here: GRCh37 or GRCh38
 REFERENCE=GRCh37
 #set your VCF creation here (ignore if you're not doing the genotyping): 
@@ -15,6 +15,13 @@ VCF=1000
 if [ -z ${SSHNAME+x} ]
 then
 	echo "The \$SSHNAME variable is not set, cannot transfer files to server. Check https://github.com/Teichlab/mapcloud for setup details."
+	exit 1
+fi
+
+#assert that the password file is there
+if [ ! -f ~/.sshpass ]
+then
+	echo "~/.sshpass does not exist. Create it and put your SSH password there."
 	exit 1
 fi
 
