@@ -68,7 +68,7 @@ fi
 #move the files into a subdirectory and clean the CRAMs up
 mkdir fastq
 mv *.fastq.gz fastq
-rm *.cram
+rm -f *.cram
 
 #cellranger proper!
 ~/cellranger/cellranger-2.0.2/cellranger count --id=$4 --fastqs=fastq --transcriptome=~/cellranger/$2

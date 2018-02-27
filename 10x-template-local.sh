@@ -4,7 +4,7 @@ set -e
 #set your file type here: cram or fastq
 FILETYPE=cram
 #set your reference here: GRCh37 or GRCh38
-REFERENCE=GRCh37
+REFERENCE=GRCh38
 #set your VCF creation here (ignore if you're not doing the genotyping): 
 #0 to use all the protein coding SNPs,
 #a nonzero integer to use the SNPs for the top N expressed genes for your sample,
