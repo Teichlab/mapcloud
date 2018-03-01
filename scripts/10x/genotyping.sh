@@ -28,8 +28,14 @@ fi
 
 #genotyping proper!
 #start by demultiplexing
+#loop over chunks of 4,000 barcodes as otherwise things break sometimes
 mkdir out
-samtools view -@ 4 -h $1/outs/possorted_genome_bam.bam | perl -nle 'use strict; use autodie; our %h; BEGIN{open(my$fh,q(<),shift@ARGV); my$od=shift@ARGV; $od//=q(); while(<$fh>){chomp; open(my$f2,"| samtools view -u - |bamstreamingmarkduplicates level=0 tag=UB | samtools view -b - > $od/$_.bam");$h{$_}=$f2; }close $fh}  if(/^@/){foreach my$fh (values %h){print {$fh} $_ }}elsif(m{\tCB:Z:(\S+)\b}){ my$fh=$h{$1}||next; print {$fh} $_;} END{close $_ foreach values %h; warn "closed BAMs\n"}' $1/outs/filtered_gene_bc_matrices/GRCh37/barcodes.tsv out
+split -d -l 4000 $1/outs/filtered_gene_bc_matrices/GRCh37/barcodes.tsv barbits
+for FID in barbits*
+do
+	samtools view -@ 4 -h $1/outs/possorted_genome_bam.bam | perl -nle 'use strict; use autodie; our %h; BEGIN{open(my$fh,q(<),shift@ARGV); my$od=shift@ARGV; $od//=q(); while(<$fh>){chomp; open(my$f2,"| samtools view -u - |bamstreamingmarkduplicates level=0 tag=UB | samtools view -b - > $od/$_.bam");$h{$_}=$f2; }close $fh}  if(/^@/){foreach my$fh (values %h){print {$fh} $_ }}elsif(m{\tCB:Z:(\S+)\b}){ my$fh=$h{$1}||next; print {$fh} $_;} END{close $_ foreach values %h; warn "closed BAMs\n"}' $FID out
+done
+rm barbits*
 cd out
 #now call bcftools mpileup | call
 parallel bash /mnt/mapcloud/scripts/10x/mpileup.sh ::: *.bam
