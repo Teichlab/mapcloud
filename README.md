@@ -42,7 +42,7 @@ You still have to go through all the same motions as with basecloud when setting
 	-	`outs/countMatrixNames.txt` tags the cells by the `sample_supplier_name` metadata
 	-	`outs/countMatrix.txt` tags the cells by the CRAM file name
 	-	`outs/uniqueMappedPercent.txt` captures the unique STAR mapping percentage
-* Optionally computes TPMs, saving them as `tpm.RDS` and `tpmNames.RDS` in `outs`; only works with `GRCh38` and `mm10`
+* Optionally computes TPMs, saving them as `tpm.RDS` and `tpmNames.RDS` in `outs`; only works with GRCh38 and mm10 references
 * Optionally runs the genotyping pipeline, creating `snpCalls.vcf` and `snpCallsNames.vcf` file in `outs`; only works with a GRCh37 reference
 * Local output stores the `outs` folder and drops the STAR alignments, complete HTSeq output and iRODS metadata dump
 
