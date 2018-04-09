@@ -16,6 +16,9 @@ do
 	#you can swap between GRCh37 and GRCh38, needs to be the first argument
 	bash /mnt/mapcloud/scripts/ss2/star-htseq-wrapper.sh $REFERENCE $RUNLANE
 	
+	#compute TPMs. comment out if unwanted
+	Rscript /mnt/mapcloud/scripts/ss2/tpm.R $RUNLANE $REFERENCE
+	
 	#genotyping script. comment out if unwanted
 	#ONLY WORKS WITH A GRCh37 REFERENCE
 	#bash /mnt/mapcloud/scripts/ss2/genotyping.sh $RUNLANE $VCF
