@@ -73,5 +73,8 @@ rm -f *.cram
 #cellranger proper!
 ~/cellranger/cellranger-2.0.2/cellranger count --id=$4 --fastqs=fastq --transcriptome=~/cellranger/$2
 
+#wipe out temporary files as those cause nothing but trouble
+ls -d $4/* | grep -v 'outs' | xargs rm -r
+
 #leave the fastq input and complete output available to be dealt with in whatever manner
 
