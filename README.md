@@ -3,7 +3,7 @@
 This bit of text is going to detail the second available cloud snapshot, mapcloud, which builds upon [basecloud](https://github.com/Teichlab/basecloud) to include tools for analysing 10X/SS2/spatial transcriptomics data, both in terms of regular mapping/quantification and genotyping cells potentially from multiple donors. If you aren't familiar with basecloud, visit its repository first - it features a borderline excessive tutorial on using OpenStack, and everything in there carries over to here. The stuff exclusive to mapcloud is:
 
 * **Cell Ranger** (v2.0.2 for internal consistency, v2.1.1 for VDJ) plus references: 10X GRCh38, mm10 and ERCC 1.2.0 releases, GRCh38 2.0.0 VDJ reference
-	* the ERCC reference can be used to generate SS2-minded GRCh38/mm10+ERCC references:
+	- the ERCC reference can be used to generate SS2-minded GRCh38/mm10+ERCC references:
 	```
 	cd ~/cellranger
 	cat GRCh38/genes/genes.gtf ERCC/genes/genes.gtf > genes.gtf
@@ -39,9 +39,8 @@ To use the pipeline, copy over your desired template to a new directory on your 
 
 You create a mapcloud just like you would a basecloud, but you select the mapcloud snapshot instead of basecloud in Zeta. While mapcloud was built on `m1.large`, the 10X/SS2 pipelines were always ran on larger flavours, with the Zeta equivalent being `m1.2xlarge`. The latter of these is recommended if you intend to make use of the pipelines, to the point where it was used to propose the increased allocation request as ten allotments of this size's resources.
 
-You still have to go through all the same motions as with basecloud when setting one of these up, plus a couple extra steps if you wish to use the pipelines contained within this repository (such as actually getting the code). The pipelines make use of the `$SSHNAME` system variable for minimum fuss automated result transfer to the farm, so if you foresee yourself using the mode wherein the complete output is automatically copied over to Lustre for safekeeping then call the code snippet below, subbing in your Sanger user ID, and store your farm login password in `~/.sshpass`. You're the only person on here so it's not going anywhere, don't worry.
+You still have to go through all the same motions as with basecloud when setting one of these up, plus a quick `git clone` if you wish to use the pipelines contained within this repository.
 
-	printf 'export SSHNAME=<user-id>\n' >> ~/.bashrc && exec bash
 	cd /mnt && git clone https://github.com/Teichlab/mapcloud
 
 ### 10X pipeline
@@ -68,7 +67,7 @@ You still have to go through all the same motions as with basecloud when setting
 * Uploads complete output to `/archive/HCA/SS2`, creating individual folders for each of your RUN_LANE combinations
 
 ### Spatial transcriptomics pipeline
-* **Input:** Sanger study IDs, or any other uniquely identifying field in the iRODS metadata; GRCh37/38 choice of reference
+* **Input:** Sanger study IDs, or any other uniquely identifying field in the iRODS metadata; GRCh38/mm10 choice of reference
 * Downloads CRAM from iRODS, converts CRAM to FASTQ
 * Runs st_pipeline to map the data with STAR (requiring a newer version than what's shipped with Cell Ranger 2.0.2) and quantify it with HTSeq
 * Creates a second count matrix file, converting ENSEMBL IDs to gene names (tagged as `genenames`) and runs quality control on it
