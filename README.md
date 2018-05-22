@@ -5,14 +5,16 @@ This bit of text is going to detail the second available cloud snapshot, mapclou
 * **Cell Ranger** (v2.0.2 for internal consistency, v2.1.1 for VDJ) plus references: 10X GRCh38, mm10 and ERCC 1.2.0 releases, GRCh38 2.0.0 VDJ reference
 	* the ERCC reference can be used to generate SS2-minded GRCh38/mm10+ERCC references:
 	```
-	cat ~/cellranger/GRCh38/genes/genes.gtf ~/cellranger/ERCC/genes/genes.gtf > genes.gtf
-	cat ~/cellranger/GRCh38/fasta/genome.fa ~/cellranger/ERCC/fasta/genome.fa > genome.fa
-	~/cellranger/cellranger-2.0.2/cellranger mkref --genome=GRCh38-ERCC --fasta=genome.fa --genes=genes.gtf --nthreads=`grep -c ^processor /proc/cpuinfo`
+	cd ~/cellranger
+	cat GRCh38/genes/genes.gtf ERCC/genes/genes.gtf > genes.gtf
+	cat GRCh38/fasta/genome.fa ERCC/fasta/genome.fa > genome.fa
+	cellranger-2.0.2/cellranger mkref --genome=GRCh38-ERCC --fasta=genome.fa --genes=genes.gtf --nthreads=`grep -c ^processor /proc/cpuinfo`
 	rm genome.fa && rm genes.gtf
 	
-	cat ~/cellranger/mm10/genes/genes.gtf ~/cellranger/ERCC/genes/genes.gtf > genes.gtf
-	cat ~/cellranger/mm10/fasta/genome.fa ~/cellranger/ERCC/fasta/genome.fa > genome.fa
-	~/cellranger/cellranger-2.0.2/cellranger mkref --genome=mm10-ERCC --fasta=genome.fa --genes=genes.gtf --nthreads=`grep -c ^processor /proc/cpuinfo`
+	cd ~/cellranger
+	cat mm10/genes/genes.gtf ERCC/genes/genes.gtf > genes.gtf
+	cat mm10/fasta/genome.fa ERCC/fasta/genome.fa > genome.fa
+	cellranger-2.0.2/cellranger mkref --genome=mm10-ERCC --fasta=genome.fa --genes=genes.gtf --nthreads=`grep -c ^processor /proc/cpuinfo`
 	rm genome.fa && rm genes.gtf
 	```
 * **salmon, kallisto** with GRCh38+ERCC and GRCm38+ERCC references
