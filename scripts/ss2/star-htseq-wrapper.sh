@@ -2,7 +2,7 @@
 set -e
 
 #run by passing run_lane into the thing, like what dump_irods.sh expects
-#but also pass GRCh37 or GRCh38 as the first argument to identify the reference
+#but also pass GRCh38 or mm10 as the first argument to identify the reference
 
 #so since we have what dump_irods.sh expects, let's use it
 bash /mnt/mapcloud/scripts/ss2/dump_irods.sh $2

@@ -15,16 +15,16 @@ then
 elif [ $2 == 0 ]
 then
 	#whole protein-coding SNP file. copy it over
-	cp ~/vcf-protein-coding/dbsnp_138.hg19.protein_coding.recode.dedupped.vcf snps.vcf
+	cp ~/gnomad-vcf/GRCh38.vcf snps.vcf
 else
 	#create our own one. start by finding all protein_coding gene lines in the GTF
-	grep -P 'protein_coding\tgene\t' ~/cellranger/GRCh37/genes/genes.gtf > genelines.gtf
+	grep -P 'protein_coding\tgene\t' ~/cellranger/GRCh38/genes/genes.gtf > genelines.gtf
 	#find the top N expressed genes in our mapped sample
 	Rscript /mnt/mapcloud/scripts/ss2/find-topgenes.R $2
 	#and now find the gene lines for those genes
 	grep -f topgenes.txt genelines.gtf > topgenelines.gtf
 	#and now intersect that with the protein coding SNP file to get these genes' SNPs
-	bedtools intersect -a ~/vcf-protein-coding/dbsnp_138.hg19.protein_coding.recode.dedupped.vcf -b topgenelines.gtf > snps.vcf
+	bedtools intersect -a ~/gnomad-vcf/GRCh38.vcf -b topgenelines.gtf > snps.vcf
 	#cleanup temp files - they all handily have gene in the name
 	rm *gene*
 fi

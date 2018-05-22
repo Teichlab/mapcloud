@@ -3,7 +3,7 @@ set -e
 
 #accepts four positional arguments:
 #	* $1 - barcodes file from ~/st_pipeline/ids
-#	* $2 - reference: GRCh37 or GRCh38
+#	* $2 - reference: GRCh38 or mm10
 #	* $3 - sample or sample_id (or id_run or whatever), which field are we checking
 #	* $4 - the value that we want to fish out
 

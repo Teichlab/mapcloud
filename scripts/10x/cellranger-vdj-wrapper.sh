@@ -3,7 +3,7 @@ set -e
 
 #four (or six) positional arguments on launch, 3 onwards for use on the imeta call
 #	* $1 - fastq or cram, depending on what file to get from irods
-#	* $2 - GRCh38 or mm10, which reference to use
+#	* $2 - GRCh38-VDJ, which reference to use
 #	* $3 - sample or sample_id (or id_run or whatever), which field are we checking
 #	* $4 - the value that we want to fish out
 #	* optionally, $5 and $6 for another pair
@@ -71,7 +71,7 @@ mv *.fastq.gz fastq
 rm -f *.cram
 
 #cellranger proper!
-~/cellranger/cellranger-2.0.2/cellranger count --id=$4 --fastqs=fastq --transcriptome=~/cellranger/$2
+~/cellranger/cellranger-2.1.1/cellranger count --id=$4 --fastqs=fastq --reference=~/cellranger/$2
 
 #wipe out temporary files as those cause nothing but trouble
 ls -d $4/* | grep -v 'outs' | xargs rm -r

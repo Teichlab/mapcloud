@@ -9,7 +9,7 @@ args = commandArgs(TRUE)
 samplename = args[1]
 topgenes = args[2]
 
-exprs = Read10X(data.dir=paste(samplename,'/outs/filtered_gene_bc_matrices/GRCh37',sep=''))
+exprs = Read10X(data.dir=paste(samplename,'/outs/filtered_gene_bc_matrices/GRCh38',sep=''))
 exprs = CreateSeuratObject(raw.data = exprs, min.cells = 3, min.genes = 200)
 exprsum = Matrix::rowSums(exprs@data)
 exprsum = sort(exprsum, decreasing=TRUE)
