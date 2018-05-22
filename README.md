@@ -27,7 +27,7 @@ All of this lives in the home directory (`~`), with self-explanatory folder name
 
 ## Getting the data from iRODS
 
-If you have a particular `$ID` of choice (a sample identifier for 10X or 10X-VDJ, or a RUN_LANE combination for SS2), the data lives in `/archive/HCA/$TECH/$ID`, where `$TECH` is 10X, 10X-VDJ or SS2 according to the technology that generated the data. In the case of 10X, the filtered count matrix can be downloaded as `iget -Kr /archive/HCA/10X/$ID/outs/filtered_gene_bc_matrices`. The main output for SS2 can be acquired via `iget -Kr /archive/HCA/SS2/$ID/outs`. The whole `$ID` folder can be downloaded via `iget -Kr` if the complete output is desired (akin to what was available in the LUSTRE folder before the iRODS migration).
+If you have a particular `$ID` of choice (a sample identifier for 10X or 10X-VDJ, or a RUN_LANE combination for SS2), the data lives in `/archive/HCA/$TECH/$ID`, where `$TECH` is 10X, 10X-VDJ or SS2 according to the technology that generated the data. In the case of 10X, the filtered count matrix can be downloaded as `iget -Kr /archive/HCA/10X/$ID/outs/filtered_gene_bc_matrices`. The main output for SS2 can be acquired via `iget -Kr /archive/HCA/SS2/$ID/outs`. The whole `$ID` folder can be downloaded via `iget -Kr` if the complete output is desired (akin to what was available in the LUSTRE folder before the iRODS migration), or looked at via `ils` to assess what exactly is available.
 
 ### Using the pipelines
 
