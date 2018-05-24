@@ -29,6 +29,18 @@ All of this lives in the home directory (`~`), with self-explanatory folder name
 
 If you have a particular `$ID` of choice (a sample identifier for 10X or 10X-VDJ, or a RUN_LANE combination for SS2), the data lives in `/archive/HCA/$TECH/$ID`, where `$TECH` is 10X, 10X-VDJ or SS2 according to the technology that generated the data. In the case of 10X, the filtered count matrix can be downloaded as `iget -Kr /archive/HCA/10X/$ID/outs/filtered_gene_bc_matrices`. The main output for SS2 can be acquired via `iget -Kr /archive/HCA/SS2/$ID/outs`. The whole `$ID` folder can be downloaded via `iget -Kr` if the complete output is desired (akin to what was available in the LUSTRE folder before the iRODS migration), or looked at via `ils` to assess what exactly is available.
 
+The main output for a space-delimited collection of 10X samples can be downloaded as follows:
+
+	#!/bin/bash
+	set -e
+
+	#your space-delimited samples go here
+	for SAMPLE in 
+	do
+		iget -Kr /archive/HCA/10X/$SAMPLE/outs/filtered_gene_bc_matrices $SAMPLE
+		iget -K /archive/HCA/10X/$SAMPLE/outs/web_summary.html $SAMPLE
+	done
+
 ### Using the pipelines
 
 The 10X/SS2/spatial transcriptomics pipelines all exist as templates within the GitHub repository. All templates go from downloading data from iRODS to a complete mapping/quantification output. In the case of 10X/SS2, the complete output is automatically uploaded back to iRODS (`/archive/HCA` specifically) for storage. The spatial transcriptomics pipeline output is very minuscule and is not automatically uploaded to iRODS at this time. The genotyping pipeline can be used as an addition for 10X/SS2 runs, but only if the GRCh38 reference is used. It is a reimplementation of Davis/Raghd/Angela's picard/GATK approach with samtools/bcftools to improve run time.
