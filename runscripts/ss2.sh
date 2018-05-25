@@ -29,3 +29,6 @@ do
 	#and now that we copied over the results, time to burn the input/output to the ground and start anew
 	rm -r $RUNLANE
 done
+
+#iRODS diagnostic - how much space is in use?
+iquest "%s" "select sum(DATA_SIZE) where COLL_NAME like '/archive/HCA/%'" | while read B dummy;do echo "CURRENT /archive/HCA USE: "$((B/(2**40)))" TiB";done
