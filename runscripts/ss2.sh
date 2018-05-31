@@ -24,7 +24,7 @@ do
 	#bash /mnt/mapcloud/scripts/ss2/genotyping.sh $RUNLANE $VCF
 	
 	#this creates a $RUNLANE output folder. copy it over! specify where below
-	bash /mnt/mapcloud/scripts/irods-upload.sh SS2 $SAMPLE
+	bash /mnt/mapcloud/scripts/irods-upload.sh SS2 $RUNLANE
 	
 	#and now that we copied over the results, time to burn the input/output to the ground and start anew
 	rm -r $RUNLANE
