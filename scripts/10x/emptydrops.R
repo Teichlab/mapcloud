@@ -17,9 +17,16 @@ cellranger.cm = Read10X(data.dir=list.dirs(paste(samplename,'/outs/filtered_gene
 #sig is a vector with TRUE for "real" cells and false otherwise
 #while out$Limited is a vector specifying if extra simulation iterations are required for a cell
 niters = 10000
+#folder creation for output in case emptydrops errors out
+dir.create(paste(samplename,'/outs/final-count-matrix',sep=''))
 repeat
 {
-	out = emptyDrops(rawdata, niters=niters, BPPARAM=MulticoreParam(detectCores()))
+	#if emptydrops errors out, copy the cellranger count matrix, barf out the error to a text file and quit
+	tryCatch({out = emptyDrops(rawdata, niters=niters, BPPARAM=MulticoreParam(detectCores()))},
+		error = function(err) {write(as.character(err),paste(samplename,'/outs/final-count-matrix/EmptyDropsError.txt',sep=''))
+			file.copy(list.dirs(paste(samplename,'/outs/raw_gene_bc_matrices',sep=''))[2],paste(samplename,'/outs/final-count-matrix',sep=''),recursive=TRUE)
+			file.rename(list.dirs(paste(samplename,'/outs/final-count-matrix',sep=''))[2],paste(samplename,'/outs/final-count-matrix/cellranger',sep=''))
+			quit()})
 	sig = out$FDR <= 0.01 & !is.na(out$FDR)
 	mask1 = !sig
 	mask2 = out$Limited & !is.na(out$Limited)
@@ -33,7 +40,6 @@ repeat
 }
 
 #let's make the plot emptydrops makes too, just in case
-dir.create(paste(samplename,'/outs/final-count-matrix',sep=''))
 png(paste(samplename,'/outs/final-count-matrix/emptydrops-plot.png',sep=''), width=12, height=12, units="in", pointsize=12, res=120)
 plot(out$Total, out$LR, log="x", col=ifelse(sig, "red", "black"))
 o <- order(out$Total)
