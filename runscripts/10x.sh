@@ -20,9 +20,6 @@ do
 	#argument 4 will be used for naming the cellranger output files
 	bash /mnt/mapcloud/scripts/10x/cellranger-wrapper.sh $FILETYPE $REFERENCE sample $SAMPLE
 	
-	#EmptyDrops droplet calling, FCA style. comment out if unwanted
-	#Rscript /mnt/mapcloud/scripts/10x/emptydrops.R $SAMPLE $REFERENCE
-	
 	#genotyping script. comment out if unwanted
 	#ONLY WORKS WITH A GRCh38 REFERENCE
 	#bash /mnt/mapcloud/scripts/10x/genotyping.sh $SAMPLE $VCF

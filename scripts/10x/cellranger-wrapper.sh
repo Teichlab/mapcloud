@@ -76,5 +76,8 @@ rm -f *.cram
 #wipe out temporary files as those cause nothing but trouble
 ls -d $4/* | grep -v 'outs' | xargs rm -r
 
+#emptydrops is now part of the main thing
+Rscript /mnt/mapcloud/scripts/10x/emptydrops.R $4
+
 #leave the fastq input and complete output available to be dealt with in whatever manner
 
