@@ -41,6 +41,28 @@ The main output for a space-delimited collection of 10X samples can be downloade
 		iget -K /archive/HCA/10X/$SAMPLE/outs/web_summary.html $SAMPLE
 	done
 
+Downloading and collating a number of bulk samples' counts can be done like so:
+
+	#!/bin/bash
+	set -e
+
+	#put your space-delimited samples here
+	for SAMPLE in 
+	do
+		iget -Kr /archive/HCA/BULK/$SAMPLE/outs $SAMPLE
+		#add header at the start of each counts.txt file identifying which sample it's from
+		echo -e "ENSG\t$SAMPLE\n$(cat $SAMPLE/counts.txt)" > $SAMPLE/counts.txt
+		if [ ! -f MergedCounts.txt ]
+		then
+			#start merged counts file with this sample
+			cp $SAMPLE/counts.txt MergedCounts.txt
+		else
+			#copy over counts into merged file
+			paste MergedCounts.txt <(cut -f 2 $SAMPLE/counts.txt) > holder.txt
+			mv holder.txt MergedCounts.txt
+		fi
+	done
+
 ### Using the pipelines
 
 The 10X/SS2/bulk/spatial transcriptomics pipelines all exist as templates within the GitHub repository. All templates go from downloading data from iRODS to a complete mapping/quantification output. In the case of 10X/SS2, the complete output is automatically uploaded back to iRODS (`/archive/HCA` specifically) for storage. The spatial transcriptomics pipeline output is very minuscule and is not automatically uploaded to iRODS at this time. The genotyping pipeline can be used as an addition for 10X/SS2 runs, but only if the GRCh38 reference is used. It is a reimplementation of Davis/Raghd/Angela's picard/GATK approach with samtools/bcftools to improve run time.
