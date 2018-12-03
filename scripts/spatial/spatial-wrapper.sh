@@ -44,7 +44,7 @@ rm fastq/*-1.fastq.gz && rm fastq/*-2.fastq.gz
 mkdir $4
 st_pipeline_run.py --expName $4 --ids $1 --ref-map ~/cellranger/$2/star --log-file log_file.txt --output-folder $4 --ref-annotation ~/cellranger/$2/genes/genes.gtf fastq/R1.fastq.gz fastq/R2.fastq.gz
 mv log_file.txt $4 && cd $4
-convertEnsemblToNames.py --annotation ~/cellranger/$REFERENCE/genes/genes.gtf --output $4\_stdata_genenames.tsv $4\_stdata.tsv
+convertEnsemblToNames.py --annotation ~/cellranger/$2/genes/genes.gtf --output $4\_stdata_genenames.tsv $4\_stdata.tsv
 mkdir qc && cd qc
 st_qa.py --input-data ../$4\_stdata_genenames.tsv
 
