@@ -17,6 +17,16 @@ This bit of text is going to detail the second available cloud snapshot, mapclou
 	cellranger-2.0.2/cellranger mkref --genome=mm10-ERCC --fasta=genome.fa --genes=genes.gtf --nthreads=`grep -c ^processor /proc/cpuinfo`
 	rm genome.fa && rm genes.gtf
 	```
+	- a pre-mRNA reference can be generated in accordance with [official 10x instructions](https://support.10xgenomics.com/single-cell-gene-expression/software/pipelines/latest/advanced/references):
+	```
+	cd ~/cellranger
+	awk 'BEGIN{FS="\t"; OFS="\t"} $3 == "transcript"{ $3="exon"; print}' \
+		GRCh38/genes/genes.gtf > premrna.gtf
+	cellranger mkref --genome=GRCh38_premrna \
+		--fasta=GRCh38/fasta/genome.fa \
+		--genes=premrna.gtf
+	rm premrna.gtf
+	```
 * **salmon, kallisto** with GRCh38+ERCC and GRCm38+ERCC references
 * **HTSeq** for STAR+HTSeq SS2 analysis; the pipeline uses the exact STAR version shipped with Cell Ranger and the references' SA indices for analysis consistency
 * **st_pipeline** for STAR+HTSeq analysis of spatial transcriptomics data generated using SciLifeLab technology
