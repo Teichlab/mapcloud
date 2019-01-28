@@ -1,11 +1,13 @@
 #!/bin/bash
 set -e
 
-#run by passing run_lane into the thing, like what dump_irods.sh expects
-#but also pass GRCh38 or mm10 as the first argument to identify the reference
+#run with three positional arguments:
+#	$1 - reference (GRCh38/mm10)
+#	$2 - run_lane
+#	$3 - irods metadata field to use for cell names (sample_supplier_name)
 
 #so since we have what dump_irods.sh expects, let's use it
-bash /mnt/mapcloud/scripts/ss2/dump_irods.sh $2
+bash /mnt/mapcloud/scripts/ss2/dump_irods.sh $2 $3
 
 #at this stage, we have all the crams, corresponding .imeta files
 #and a sampleInfo.txt file with conventionally named samples

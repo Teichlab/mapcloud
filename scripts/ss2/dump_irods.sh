@@ -22,7 +22,7 @@ find $run_lane | grep -E '#888\.' | xargs rm
 # get and format the meta info.
 for cram in $(find $run_lane | grep cram$ | sed -e 's/.*\///' | sed -e 's/\.cram$//'); do
     imeta ls -d /seq/$run/$cram.cram > $run_lane/$cram.imeta
-    sn=$(grep -A 1 sample_supplier_name $run_lane/$cram.imeta | tail -1 | sed 's/ /_/g')
+    sn=$(grep -A 1 $2$ $run_lane/$cram.imeta | tail -1 | sed 's/ /_/g')
     sample_name=${sn:7}
     echo -e "$run_lane/$cram\t$sample_name" >> $run_lane/sampleInfo.txt
 done

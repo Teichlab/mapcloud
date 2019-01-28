@@ -3,6 +3,9 @@ set -e
 
 #set your reference here: GRCh38 or mm10
 REFERENCE=GRCh38
+#set the field of irods metadata to use as cell names here
+#(for current runs, it's sample_supplier_name)
+METAFIELD=sample_supplier_name
 #set your VCF creation here (ignore if you're not doing the genotyping): 
 #0 to use all the protein coding SNPs,
 #a nonzero integer to use the SNPs for the top N expressed genes for your sample,
@@ -13,8 +16,7 @@ VCF=1000
 for RUNLANE in 
 do
 	#call the pipeline proper
-	#you can swap between GRCh38 and mm10, needs to be the first argument
-	bash /mnt/mapcloud/scripts/ss2/star-htseq-wrapper.sh $REFERENCE $RUNLANE
+	bash /mnt/mapcloud/scripts/ss2/star-htseq-wrapper.sh $REFERENCE $RUNLANE $METAFIELD
 	
 	#compute TPMs. comment out if unwanted
 	Rscript /mnt/mapcloud/scripts/ss2/tpm.R $RUNLANE $REFERENCE
