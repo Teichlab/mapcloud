@@ -22,9 +22,7 @@ This bit of text is going to detail the second available cloud snapshot, mapclou
 	cd ~/cellranger
 	awk 'BEGIN{FS="\t"; OFS="\t"} $3 == "transcript"{ $3="exon"; print}' \
 		GRCh38/genes/genes.gtf > premrna.gtf
-	cellranger mkref --genome=GRCh38_premrna \
-		--fasta=GRCh38/fasta/genome.fa \
-		--genes=premrna.gtf
+	cellranger-2.0.2/cellranger mkref --genome=GRCh38_premrna  --fasta=GRCh38/fasta/genome.fa  --genes=premrna.gtf --nthreads=`grep -c ^processor /proc/cpuinfo`
 	rm premrna.gtf
 	```
 * **salmon, kallisto** with GRCh38+ERCC and GRCm38+ERCC references
