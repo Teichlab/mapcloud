@@ -2,7 +2,7 @@
 
 This bit of text is going to detail the second available cloud snapshot, mapcloud, which builds upon [basecloud](https://github.com/Teichlab/basecloud) to include tools for analysing 10X/SS2/bulk/spatial transcriptomics data, both in terms of regular mapping/quantification and genotyping cells potentially from multiple donors. If you aren't familiar with basecloud, visit its repository first - it features a borderline excessive tutorial on using OpenStack, and everything in there carries over to here. The stuff exclusive to mapcloud is:
 
-* **Cell Ranger** (v2.0.2 for internal consistency, v2.1.1 for VDJ) plus references: 10X GRCh38, mm10 and ERCC 1.2.0 releases, GRCh38 2.0.0 VDJ reference
+* **Cell Ranger** (v2.0.2 for 3'v2 internal consistency, v2.1.1 for VDJ and 5', v3.0.2 for 3'v3) plus references: 10X GRCh38, mm10 and ERCC 1.2.0 releases, GRCh38 2.0.0 VDJ reference
 	- the ERCC reference can be used to generate SS2-minded GRCh38/mm10+ERCC references:
 	```
 	cd ~/cellranger
@@ -25,7 +25,7 @@ This bit of text is going to detail the second available cloud snapshot, mapclou
 	cellranger-2.0.2/cellranger mkref --genome=GRCh38_premrna  --fasta=GRCh38/fasta/genome.fa  --genes=premrna.gtf --nthreads=`grep -c ^processor /proc/cpuinfo`
 	rm premrna.gtf
 	```
-* **salmon, kallisto** with GRCh38+ERCC and GRCm38+ERCC references
+* **salmon, kallisto** with 10X-reference-compatible GRCh38/mm10 indices; genemaps etc. can be found in the transcriptomes+genemaps folder
 * **HTSeq** for STAR+HTSeq SS2 analysis; the pipeline uses the exact STAR version shipped with Cell Ranger and the references' SA indices for analysis consistency
 * **st_pipeline** for STAR+HTSeq analysis of spatial transcriptomics data generated using SciLifeLab technology
 * **VCF with SNPs for all protein coding genes** for use with 10X/SS2 GRCh38 mapping only
@@ -47,6 +47,17 @@ The main output for a space-delimited collection of 10X samples can be downloade
 	do
 		iget -Kr /archive/HCA/10X/$SAMPLE/outs/filtered_gene_bc_matrices $SAMPLE
 		iget -K /archive/HCA/10X/$SAMPLE/outs/web_summary.html $SAMPLE
+	done
+
+Downloading SS2 is done per run_lane combination (e.g. 24013_1):
+
+	#!/bin/bash
+	set -e
+	
+	#your space-delimited runlanes go here
+	for RUNLANE in 
+	do
+		iget -Kr /archive/HCA/SS2/$RUNLANE/outs $RUNLANE
 	done
 
 Downloading and collating a number of bulk samples' counts can be done like so:
@@ -86,16 +97,18 @@ You still have to go through all the same motions as with basecloud when setting
 	cd /mnt && git clone https://github.com/Teichlab/mapcloud
 
 ### 10X pipeline
-* **Input:** Sanger study IDs, or any other uniquely identifying field in the iRODS metadata; GRCh38/mm10 choice of reference; cram/fastq file format to download; optional second pair of iRODS metadata fields (such as `run_id`) to help narrow down the download scope if needed; VCF file location/top expressed gene count to filter SNPs for genotyping if relevant
+* **Input:** Sanger study IDs, or any other uniquely identifying field in the iRODS metadata; GRCh38/mm10 choice of reference; Cell Ranger version of choice (2.0.2, 2.1.1, 3.0.2)
+* Advanced input: cram/fastq file format to download; optional second pair of iRODS metadata fields (such as `run_id`) to help narrow down the download scope if needed; VCF file location/top expressed gene count to filter SNPs for genotyping if relevant
 * Downloads CRAM/FASTQ from iRODS, converts CRAM to FASTQ if needed
-* Runs Cell Ranger (version 2.0.2)
-* Optionally runs EmptyDrops, creating a `final-count-matrix` folder with the Cell Ranger, EmptyDrops and cell set union count matrices in `.RDS` format, storing it in `outs`
+* Runs Cell Ranger (user-specified version, internal consistency: 2.0.2 for 3'v2, 2.1.1 for 5', 3.0.2 for 3'v3)
+* Optionally runs EmptyDrops (for Cell Ranger 2.x), creating a `final-count-matrix` folder with the Cell Ranger, EmptyDrops and cell set union count matrices in `.RDS` format, storing it in `outs`
 * Optionally runs the genotyping pipeline, creating a `.vcf` file named after the sample in `outs`; only works with a GRCh38 reference
 * Uploads complete output to `/archive/HCA/10X`, creating individual folders for each of your samples
 * VDJ variant runs Cell Ranger 2.1.1 with a GRCh38 reference only and uploads the complete output to `/archive/HCA/10X-VDJ`, creating individual folders for each of your samples
 
 ### SS2 pipeline
-* **Input:** RUN_LANE combinations identifying all your plates (e.g. 24013_1); GRCh38/mm10 choice of reference; VCF file location/top expressed gene count to filter SNPs for genotyping if relevant
+* **Input:** RUN_LANE combinations identifying all your plates (e.g. 24013_1); GRCh38/mm10 choice of reference; 
+* Advanced input: VCF file location/top expressed gene count to filter SNPs for genotyping if relevant
 * Downloads CRAM from iRODS, converts CRAM to FASTQ
 * Downloads all of the iRODS metadata, extracts the `sample_supplier_name` field and creates a map of CRAM file to the resulting values in `outs/sampleInfo.txt`
 * Aligns the data with STAR (version 2.5.1b, shipped with Cell Ranger 2.0.2)

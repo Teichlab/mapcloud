@@ -5,6 +5,8 @@ set -e
 FILETYPE=cram
 #set your reference here: GRCh38 or mm10
 REFERENCE=GRCh38
+#set the cellranger version here: 2.0.2 for 3'v2, 2.1.1 for 5', 3.0.2 for 3'v3
+VERSION=2.0.2
 #set your VCF creation here (ignore if you're not doing the genotyping): 
 #0 to use all the protein coding SNPs,
 #a nonzero integer to use the SNPs for the top N expressed genes for your sample,
@@ -15,10 +17,11 @@ VCF=1000
 for SAMPLE in 
 do
 	#run the cellranger-wrapper.sh pipeline, providing cram/fastq input as argument 1
-	#and GRCh38/mm10 reference choice as argument 2. arguments 3+4 form an imeta query pair
-	#you can optionally provide a second one to refine the search if needed in 5+6
-	#argument 4 will be used for naming the cellranger output files
-	bash /mnt/mapcloud/scripts/10x/cellranger-wrapper.sh $FILETYPE $REFERENCE sample $SAMPLE
+	#and GRCh38/mm10 reference choice as argument 2. argument 3 is the version to use.
+	#arguments 4+5 form an imeta query pair, you can optionally provide a second one to 
+	#refine the search if needed in 6+7. argument 4 will be used for naming the 
+	#cellranger output files
+	bash /mnt/mapcloud/scripts/10x/cellranger-wrapper.sh $FILETYPE $REFERENCE $VERSION sample $SAMPLE
 	
 	#genotyping script. comment out if unwanted
 	#ONLY WORKS WITH A GRCh38 REFERENCE

@@ -4,21 +4,22 @@ set -e
 #four (or six) positional arguments on launch, 3 onwards for use on the imeta call
 #	* $1 - fastq or cram, depending on what file to get from irods
 #	* $2 - GRCh38 or mm10, which reference to use
-#	* $3 - sample or sample_id (or id_run or whatever), which field are we checking
-#	* $4 - the value that we want to fish out
-#	* optionally, $5 and $6 for another pair
+#	* $3 - cellranger version to use (2.0.2 for 3'v2, 2.1.1 for 5', 3.0.2 for 3'v3)
+#	* $4 - sample or sample_id (or id_run or whatever), which field are we checking
+#	* $5 - the value that we want to fish out
+#	* optionally, $6 and $7 for another pair
 
 #ok, time to get the imeta ball rolling
 #prepare the foundation for the imeta dump becoming a shell script with igets
 #and then obtain the imeta using the value pair(s) provided on input
 printf '#!/bin/bash\nset -e\n\n----\n' > imeta.sh
-if [[ $# -eq 4 ]]
+if [[ $# -eq 5 ]]
 then
-	imeta qu -z seq -d $3 = $4 and type = $1 and target = 1 >> imeta.sh
+	imeta qu -z seq -d $4 = $5 and type = $1 and target = 1 >> imeta.sh
 fi
-if [[ $# -eq 6 ]]
+if [[ $# -eq 7 ]]
 then
-	imeta qu -z seq -d $3 = $4 and $5 = $6 and type = $1 and target = 1 >> imeta.sh
+	imeta qu -z seq -d $4 = $5 and $6 = $7 and type = $1 and target = 1 >> imeta.sh
 fi
 
 #a couple quick substitutions to actually turn the imeta dump into a bunch of igets
@@ -53,16 +54,16 @@ then
 	count=1
 	for file in *I1_001.fastq.gz
 	do
-		mv "${file}" "${file/*.cram/$4\_S$count\_L001}"
+		mv "${file}" "${file/*.cram/$5\_S$count\_L001}"
 		file=$(sed 's/I1/R1/g' <<< $file)
-		mv "${file}" "${file/*.cram/$4\_S$count\_L001}"
+		mv "${file}" "${file/*.cram/$5\_S$count\_L001}"
 		file=$(sed 's/R1/R2/g' <<< $file)
-		mv "${file}" "${file/*.cram/$4\_S$count\_L001}"
+		mv "${file}" "${file/*.cram/$5\_S$count\_L001}"
 		(( count++ ))
 	done
 else
 	#rename the fastqs to a format that cellranger will get
-	rename s/[^_]*_[^_]*_[^_]*_/$4\_/ *.fastq.gz
+	rename s/[^_]*_[^_]*_[^_]*_/$5\_/ *.fastq.gz
 fi
 
 #move the files into a subdirectory and clean the CRAMs up
@@ -71,13 +72,15 @@ mv *.fastq.gz fastq
 rm -f *.cram
 
 #cellranger proper!
-~/cellranger/cellranger-2.0.2/cellranger count --id=$4 --fastqs=fastq --transcriptome=~/cellranger/$2
+~/cellranger/cellranger-$3/cellranger count --id=$5 --fastqs=fastq --transcriptome=~/cellranger/$2
 
 #wipe out temporary files as those cause nothing but trouble
-ls -d $4/* | grep -v 'outs' | xargs rm -r
+ls -d $5/* | grep -v 'outs' | xargs rm -r
 
-#emptydrops is now part of the main thing
-Rscript /mnt/mapcloud/scripts/10x/emptydrops.R $4
+#emptydrops is now part of the main thing (for cell ranger 2.x)
+if [[ $3 == 2* ]]
+then
+	Rscript /mnt/mapcloud/scripts/10x/emptydrops.R $5
+fi
 
 #leave the fastq input and complete output available to be dealt with in whatever manner
-

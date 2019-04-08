@@ -3,8 +3,8 @@ set -e
 
 #set your reference here: GRCh38 or mm10
 REFERENCE=GRCh38
-#set your barcodes file here: one of the files in ~/st_pipeline/ids
-BARCODES=~/st_pipeline/ids/1000L2_barcodes.txt
+#set your barcodes file here
+BARCODES=barcodes.txt
 
 for SAMPLE in 
 do
