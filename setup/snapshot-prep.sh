@@ -95,5 +95,15 @@ echo 'ubuntu        hard nofile 131072' | sudo tee -a /etc/security/limits.conf
 echo '## Example soft limit for max opened files' | sudo tee -a /etc/security/limits.conf
 echo 'ubuntu        soft nofile 131072' | sudo tee -a /etc/security/limits.conf
 
+#cellranger atac, not mirrored on farm so grab from source
+#need to do this slow as this thing's filling up
+mkdir ~/cellranger-atac && cd ~/cellranger-atac
+curl -o cellranger-atac-1.1.0.tar.gz "http://cf.10xgenomics.com/releases/cell-atac/cellranger-atac-1.1.0.tar.gz?Expires=1560210728&Policy=eyJTdGF0ZW1lbnQiOlt7IlJlc291cmNlIjoiaHR0cDovL2NmLjEweGdlbm9taWNzLmNvbS9yZWxlYXNlcy9jZWxsLWF0YWMvY2VsbHJhbmdlci1hdGFjLTEuMS4wLnRhci5neiIsIkNvbmRpdGlvbiI6eyJEYXRlTGVzc1RoYW4iOnsiQVdTOkVwb2NoVGltZSI6MTU2MDIxMDcyOH19fV19&Signature=miadbrKyMfxpmoLisns4t~X0hzlmb5qLCT715pggdHeS3b6ablsBvpG7CFDg5WIzq6TzMA6-gVhkSZeaKeyF0XSr5wuMAY9T-0Ac5USTWb9Pi8OHfkXSpMky48Oh9niGAeDr4s72RejMmNMJS9zAp5zCsBtWZK0EA9ZtfkU9MeAX-SahQJP1I2NDil5lxImte0qtqZqZ9Q2Jc8JWZixp4vM1QOH5sgOSuUgso~NhtNw~LKErL0IpYGwYL7ZwPN8xC8RWwkoxtob0Yr-e~3PivRfzUqwONjC5L5~xicXhQ6jTgVzW-fehMZh8CsISRFjqc3S3d2Jqiaog53APoGQiSA__&Key-Pair-Id=APKAI7S6A5RYOXBWRPDA"
+tar -xzvf cellranger-atac-1.1.0.tar.gz && rm cellranger-atac-1.1.0.tar.gz
+curl -O http://cf.10xgenomics.com/supp/cell-atac/refdata-cellranger-atac-GRCh38-1.1.0.tar.gz
+tar -xzvf refdata-cellranger-atac-GRCh38-1.1.0.tar.gz && rm refdata-cellranger-atac-GRCh38-1.1.0.tar.gz
+#I can't fit the mouse. sorry.
+mv refdata-cellranger-atac-GRCh38-1.1.0 GRCh38
+
 #the cloud is now ready for picture day!
 #go back to eta, instances, create snapshot of the instance, name it something useful (mapcloud comes to mind)

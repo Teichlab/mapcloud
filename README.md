@@ -29,6 +29,7 @@ This bit of text is going to detail the second available cloud snapshot, mapclou
 * **HTSeq** for STAR+HTSeq SS2 analysis; the pipeline uses the exact STAR version shipped with Cell Ranger and the references' SA indices for analysis consistency
 * **st_pipeline** for STAR+HTSeq analysis of spatial transcriptomics data generated using SciLifeLab technology
 * **VCF with SNPs for all protein coding genes** for use with 10X/SS2 GRCh38 mapping only
+* **cellranger-atac plus GRCh38 reference**
 * **automated pipeline code base** for 10X/SS2/spatial transcriptomics analysis, plus per-cell donor genotype calling
 
 All of this lives in the home directory (`~`), with self-explanatory folder names.
