@@ -24,8 +24,10 @@ fi
 
 for SAMPLE in 
 do
+	#set up nested folder architecture to match /archive/HCA irods design
 	mkdir $SAMPLE && cd $SAMPLE && mkdir starsolo && cd starsolo
 	
+	#acquire fastqs via standard 10x proceedings
 	mkdir fastq && cd fastq
 	printf '#!/bin/bash\nset -e\n\n----\n' > imeta.sh
 	imeta qu -z seq -d sample = $SAMPLE and type = cram and target = 1 >> imeta.sh
@@ -36,7 +38,8 @@ do
 	cat *R1_001.fastq.gz > R1.fastq.gz
 	cat *R2_001.fastq.gz > R2.fastq.gz
 	rm *cram* && cd ..
-
+	
+	#actually run starsolo
 	~/STAR-2.7.3a/bin/Linux_x86_64/STAR --runThreadN `grep -c ^processor /proc/cpuinfo` \
 		--genomeDir ~/STAR-2.7.3a/$REFERENCE \
 		--readFilesIn fastq/R2.fastq.gz fastq/R1.fastq.gz \
@@ -53,10 +56,23 @@ do
 		--soloStrand $STRAND \
 		--soloUMIfiltering MultiGeneUMI \
 		--soloCellFilter CellRanger2.2 3000 0.99 10 \
-		--soloFeatures Gene \
+		--soloFeatures Gene GeneFull Velocyto \
 		--soloOutFileNames logs/ genes.tsv barcodes.tsv matrix.mtx
-
-	mv Log.out logs && mv Log.progress.out logs && mv logs/Gene counts && rm -r fastq
+	
+	#starsolo's take on velocyto is a three value column mtx, with spliced, unspliced, ambiguous
+	#in order to let downstream tools make use of it, split them up into the appropriate matrices
+	head -n 3 logs/Velocyto/raw/matrix.mtx > logs/Velocyto/raw/spliced.mtx
+	head -n 3 logs/Velocyto/raw/matrix.mtx > logs/Velocyto/raw/unspliced.mtx
+	head -n 3 logs/Velocyto/raw/matrix.mtx > logs/Velocyto/raw/ambiguous.mtx
+	tail -n +4 logs/Velocyto/raw/matrix.mtx | cut -f 1,2,3 -d ' ' >> logs/Velocyto/raw/spliced.mtx
+	tail -n +4 logs/Velocyto/raw/matrix.mtx | cut -f 1,2,4 -d ' ' >> logs/Velocyto/raw/unspliced.mtx
+	tail -n +4 logs/Velocyto/raw/matrix.mtx | cut -f 1,2,5 -d ' ' >> logs/Velocyto/raw/ambiguous.mtx
+	
+	#do various python'y things - cellranger 3 cell filter, scrublet, velocyto object
+	python3 /mnt/mapcloud/rudimentary/postprocess.py
+	
+	#reshuffle some files, dump the thing on irods and reset
+	mv logs counts && mkdir logs && mv counts/Barcodes.stats logs && mv Log.out logs && mv Log.progress.out logs && rm -r fastq
 	cd ../.. && bash /mnt/mapcloud/scripts/irods-upload.sh 10X $SAMPLE
 	rm -r $SAMPLE
 done
