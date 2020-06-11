@@ -26,7 +26,12 @@ def run_scrublet(adata, resolution_function=None):
 	if resolution_function is None:
 		resolution_function = lambda x: np.maximum(np.maximum(np.log10(x)-1, 0)**2, 0.1)
 	scrub = scr.Scrublet(adata.X)
-	ds, pd = scrub.scrub_doublets(verbose=False)
+	#this has the potential to brick for poor quality data
+	#if so, abort it and everything downstream
+	try:
+		ds, pd = scrub.scrub_doublets(verbose=False)
+	except:
+		return
 	adata.obs['scrublet_score'] = ds
 
 	adata_copy = adata.copy()
