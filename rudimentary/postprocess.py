@@ -84,7 +84,9 @@ for feature in ['Gene','GeneFull']:
 		adata = sc.read_10x_mtx('logs/'+feature+'/'+filter)
 		#run Ni's adaptation of my adaptation of scrublet
 		run_scrublet(adata)
-		adata.obs[['scrublet_score', 'cluster_scrublet_score', 'doublet_pval', 'doublet_bh_pval']].reset_index().to_csv('logs/'+feature+'/'+filter+'/scrublet.csv', index=False)
+		#more anti-brick protection - the scores won't show up in the object if scrublet fails
+		if 'scrublet_score' in adata.obs.columns:
+			adata.obs[['scrublet_score', 'cluster_scrublet_score', 'doublet_pval', 'doublet_bh_pval']].reset_index().to_csv('logs/'+feature+'/'+filter+'/scrublet.csv', index=False)
 
 #create a scanpy object with all the loom stuff in the correct layers
 #(making use of the earlier single-column mtx parsing of starsolo's results)
