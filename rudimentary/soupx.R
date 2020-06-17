@@ -8,7 +8,7 @@ for (feature in c('Gene','GeneFull'))
 	{
 		#skip if there's no scrublet file - that means doublet detection failed
 		#(and something is off with the sample)
-		if (!file.exists(paste0('counts/',feature,'/',filter,'/scrublet.csv'))
+		if (!file.exists(paste0('counts/',feature,'/',filter,'/scrublet.csv')))
 			next
 		
 		#read in the filtered cells and create soupx object
