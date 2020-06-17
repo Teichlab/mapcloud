@@ -71,8 +71,13 @@ do
 	#do various python'y things - cellranger 3 cell filter, scrublet, velocyto object
 	python3 /mnt/mapcloud/rudimentary/postprocess.py
 	
-	#reshuffle some files, dump the thing on irods and reset
+	#reshuffle some files and run soupX
 	mv logs counts && mkdir logs && mv counts/Barcodes.stats logs && mv Log.out logs && mv Log.progress.out logs && rm -r fastq
+	Rscript /mnt/mapcloud/rudimentary/soupx.R
+	#for whatever reason this creates this empty, unnecessary file. kick it
+	rm -f Rplots.pdf
+	
+	#dump the thing on irods and reset
 	cd ../.. && bash /mnt/mapcloud/scripts/irods-upload.sh 10X $SAMPLE
 	rm -r $SAMPLE
 done

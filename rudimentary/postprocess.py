@@ -61,6 +61,8 @@ def run_scrublet(adata, resolution_function=None):
 		adata_copy.obs.loc[k, 'pval'] = pvals[i]
 		adata_copy.obs.loc[k, 'bh_pval'] = bh_pvals[i]
 	sc.settings.verbosity = old_verbosity
+	#need to also export the clustering, for soupx purposes
+	adata.obs['scrublet_leiden'] = adata_copy.obs['leiden']
 	adata.obs['scrublet_score'] = adata_copy.obs['scrublet_score']
 	adata.obs['cluster_scrublet_score'] = adata_copy.obs['cluster_scrublet_score']
 	adata.obs['doublet_pval'] = adata_copy.obs['pval']
@@ -86,7 +88,7 @@ for feature in ['Gene','GeneFull']:
 		run_scrublet(adata)
 		#more anti-brick protection - the scores won't show up in the object if scrublet fails
 		if 'scrublet_score' in adata.obs.columns:
-			adata.obs[['scrublet_score', 'cluster_scrublet_score', 'doublet_pval', 'doublet_bh_pval']].reset_index().to_csv('logs/'+feature+'/'+filter+'/scrublet.csv', index=False)
+			adata.obs[['scrublet_leiden', 'scrublet_score', 'cluster_scrublet_score', 'doublet_pval', 'doublet_bh_pval']].reset_index().to_csv('logs/'+feature+'/'+filter+'/scrublet.csv', index=False)
 
 #create a scanpy object with all the loom stuff in the correct layers
 #(making use of the earlier single-column mtx parsing of starsolo's results)
