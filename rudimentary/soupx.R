@@ -23,7 +23,10 @@ for (feature in c('Gene','GeneFull'))
 		
 		#now that we have clusters, we can resume the soupx'ing
 		sc = setClusters(sc,scrublet[,'scrublet_leiden'])
-		sc = autoEstCont(sc)
+		#this might sometimes actually fail. so try() it just in case
+		message = try(sc <- autoEstCont(sc))
+		if (class(message) == 'try-error')
+			next
 		out = adjustCounts(sc)
 		#create a new folder and write the results there
 		#not just the count matrix - also the soup profile and rho estimates
