@@ -31,13 +31,14 @@ getfastq() {
 }
 
 #positional arguments to whole script like so
-#(SAMPLES is GEX+CITE together, e.g. Imm_FLNG8965969+Imm_FLNG8965970)
+#(SAMPLES is GEX-CITE together, e.g. Imm_FLNG8965969-Imm_FLNG8965970)
 SAMPLES=$1
 REFERENCE=$2
+#also requires a 10x-compatible feature reference file called citeseq.csv in the run folder
 
 #split up GEX and CITE on the + in $SAMPLES (GEX first, CITE second), then download stuff
-GEX=`echo $SAMPLES | sed "s/+.*//"`
-CITE=`echo $SAMPLES | sed "s/.*+//"`
+GEX=`echo $SAMPLES | sed "s/-.*//"`
+CITE=`echo $SAMPLES | sed "s/.*-//"`
 getfastq $GEX fastq_gex
 getfastq $CITE fastq_cite
 

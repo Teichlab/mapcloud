@@ -3,9 +3,10 @@ set -e
 
 #set reference here. must be present as a cellranger index folder in ~/cellranger
 REFERENCE=GRCh38
+#also requires a 10x-compatible feature reference file called citeseq.csv in the run folder
 
-#SAMPLE here is a combination of a single CITE's GEX and CITE joined with a + sign
-#(e.g. Imm_FLNG8965969+Imm_FLNG8965970)
+#SAMPLE here is a combination of a single CITE's GEX and CITE joined with a - sign
+#(e.g. Imm_FLNG8965969-Imm_FLNG8965970)
 for SAMPLE in 
 do
 	#run the starsolo wrapper
