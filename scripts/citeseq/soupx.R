@@ -6,21 +6,26 @@ library(SoupX)
 #(that cellranger uses to create its output folder)
 args = commandArgs(TRUE)
 dataDir = file.path(args[1],'outs')
-sc = load10X(dataDir, includeFeatures=c('Gene Expression', 'Antibody Capture'))
+#load just the CITE part
+sc = load10X(dataDir, includeFeatures=c('Antibody Capture'))
 #this might sometimes actually fail. so try() it just in case
-message = try(sc <- autoEstCont(sc))
+message = try(sc <- autoEstCont(sc, soupQuantile=0.25, tfidfMin=0.2, forceAccept=TRUE))
 if (class(message) != 'try-error')
 {
 	out = adjustCounts(sc)
-	#create soupx subfolder within filtered_feature_bc_matrix
+	#create soupx-cite subfolder within filtered_feature_bc_matrix
 	#and write out a cellranger3-formatted mtx export there
 	featurePath = file.path(dataDir,'filtered_feature_bc_matrix')
-	soupxPath = file.path(featurePath,'soupx')
+	soupxPath = file.path(featurePath,'soupx-cite')
 	dir.create(soupxPath)
 	Matrix::writeMM(out, file.path(soupxPath,'matrix.mtx'))
 	system(paste('gzip', file.path(soupxPath,'matrix.mtx')))
 	for (fName in c('barcodes.tsv.gz', 'features.tsv.gz'))
 	{
-		system(paste('cp', file.path(featurePath,fName), file.path(soupxPath,fName)))
+		system(paste('cp', file.path(featurePath,'features.tsv.gz'), file.path(soupxPath,fName)))
 	}
+	#the barcodes need a little postprocessing nudge - filter it to just the AB_ ones, then recompress
+	system(paste('zcat', file.path(soupxPath,'features.tsv.gz'), '| grep "AB_" > features.tsv'))
+	system(paste('rm', file.path(soupxPath,'features.tsv.gz')))
+	system(paste('gzip', file.path(soupxPath,'features.tsv')))
 }
