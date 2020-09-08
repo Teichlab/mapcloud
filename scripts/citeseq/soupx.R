@@ -24,7 +24,7 @@ if (class(message) != 'try-error')
 	{
 		system(paste('cp', file.path(featurePath,'features.tsv.gz'), file.path(soupxPath,fName)))
 	}
-	#the barcodes need a little postprocessing nudge - filter it to just the AB_ ones, then recompress
+	#the genes need a little postprocessing nudge - filter it to just the AB_ ones, then recompress
 	system(paste('zcat', file.path(soupxPath,'features.tsv.gz'), '| grep "AB_" > features.tsv'))
 	system(paste('rm', file.path(soupxPath,'features.tsv.gz')))
 	system(paste('gzip', file.path(soupxPath,'features.tsv')))
