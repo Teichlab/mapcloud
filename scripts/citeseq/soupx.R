@@ -20,12 +20,9 @@ if (class(message) != 'try-error')
 	dir.create(soupxPath)
 	Matrix::writeMM(out, file.path(soupxPath,'matrix.mtx'))
 	system(paste('gzip', file.path(soupxPath,'matrix.mtx')))
-	for (fName in c('barcodes.tsv.gz', 'features.tsv.gz'))
-	{
-		system(paste('cp', file.path(featurePath,'features.tsv.gz'), file.path(soupxPath,fName)))
-	}
-	#the genes need a little postprocessing nudge - filter it to just the AB_ ones, then recompress
-	system(paste('zcat', file.path(soupxPath,'features.tsv.gz'), '| grep "AB_" > features.tsv'))
+	system(paste('cp', file.path(featurePath,'barcodes.tsv.gz'), file.path(soupxPath,'barcodes.tsv.gz')))
+	#the genes need a little postprocessing nudge - filter it to just the AB_ ones, then compress
+	system(paste('zcat', file.path(featurePath,'features.tsv.gz'), '| grep "AB_" >', file.path(soupxPath,'features.tsv.gz')))
 	system(paste('rm', file.path(soupxPath,'features.tsv.gz')))
 	system(paste('gzip', file.path(soupxPath,'features.tsv')))
 }
