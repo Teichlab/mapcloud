@@ -23,6 +23,5 @@ if (class(message) != 'try-error')
 	system(paste('cp', file.path(featurePath,'barcodes.tsv.gz'), file.path(soupxPath,'barcodes.tsv.gz')))
 	#the genes need a little postprocessing nudge - filter it to just the AB_ ones, then compress
 	system(paste('zcat', file.path(featurePath,'features.tsv.gz'), '| grep "AB_" >', file.path(soupxPath,'features.tsv.gz')))
-	system(paste('rm', file.path(soupxPath,'features.tsv.gz')))
 	system(paste('gzip', file.path(soupxPath,'features.tsv')))
 }
