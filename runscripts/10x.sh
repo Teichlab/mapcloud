@@ -4,9 +4,9 @@ set -e
 #set your file type here: cram or fastq
 FILETYPE=cram
 #set your reference here: GRCh38 or mm10
-REFERENCE=GRCh38
-#set the cellranger version here: 2.0.2 for 3'v2, 2.1.1 for 5', 3.0.2 for 3'v3
-VERSION=2.0.2
+REFERENCE=GRCh38-3.0.0
+#set the cellranger version here, must be present as ~/cellranger/cellranger-$VERSION
+VERSION=4.0.0
 #set your VCF creation here (ignore if you're not doing the genotyping): 
 #0 to use all the protein coding SNPs,
 #a nonzero integer to use the SNPs for the top N expressed genes for your sample,

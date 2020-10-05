@@ -4,7 +4,7 @@ set -e
 #set your file type here: cram or fastq
 FILETYPE=cram
 #set your reference here: GRCh38 or mm10
-REFERENCE=mm10-3.0.0_premrna
+REFERENCE=GRCh38-3.0.0
 #set the metadata file here
 META=meta.csv
 

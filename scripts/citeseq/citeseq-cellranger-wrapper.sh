@@ -48,7 +48,7 @@ echo $(pwd)"/fastq_gex,"$GEX",Gene Expression" >> libraries.csv
 echo $(pwd)"/fastq_cite,"$CITE,"Antibody Capture" >> libraries.csv
 
 #run cellranger itself
-~/cellranger/cellranger-3.0.2/cellranger count --id=$SAMPLES --libraries=libraries.csv --feature-ref=citeseq.csv --transcriptome=~/cellranger/$REFERENCE
+~/cellranger/cellranger-4.0.0/cellranger count --id=$SAMPLES --libraries=libraries.csv --feature-ref=citeseq.csv --transcriptome=~/cellranger/$REFERENCE
 
 #wipe out temporary files as those cause nothing but trouble
 ls -d $SAMPLES/* | grep -v 'outs' | xargs rm -r

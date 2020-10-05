@@ -2,9 +2,9 @@
 set -e
 
 #set reference here. must be present as a star index folder in ~/STAR-2.7.3a
-REFERENCE=GRCh38
+REFERENCE=GRCh38-3.0.0
 #choose 10x chemistry. v2, v3 for 3'; or v2-5 if 5'
-CHEMISTRY=v2
+CHEMISTRY=v2-5
 
 for SAMPLE in 
 do

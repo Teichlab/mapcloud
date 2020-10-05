@@ -9,7 +9,17 @@ dataDir = file.path(args[1],'outs')
 #load just the CITE part
 sc = load10X(dataDir, includeFeatures=c('Antibody Capture'))
 #this might sometimes actually fail. so try() it just in case
-message = try(sc <- autoEstCont(sc, soupQuantile=0.25, tfidfMin=0.2, forceAccept=TRUE))
+soupQuantile = 0.25
+tfidfMin = 0.2
+message = try(sc <- autoEstCont(sc, soupQuantile=soupQuantile, tfidfMin=tfidfMin, forceAccept=TRUE))
+#we really don't want this to fail though. so keep dropping the parameters and trying again
+#(once tfidMin hits 0.05 the next iteration puts it at 0, so just give up)
+while ((class(message) == 'try-error') && (tfidfMin > 0.05))
+{
+	soupQuantile = soupQuantile - 0.05
+	tfidfMin = tfidfMin - 0.05
+	message = try(sc <- autoEstCont(sc, soupQuantile=soupQuantile, tfidfMin=tfidfMin, forceAccept=TRUE))
+}
 if (class(message) != 'try-error')
 {
 	out = adjustCounts(sc)

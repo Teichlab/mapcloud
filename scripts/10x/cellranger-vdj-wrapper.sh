@@ -71,7 +71,7 @@ mv *.fastq.gz fastq
 rm -f *.cram
 
 #cellranger proper!
-~/cellranger/cellranger-2.1.1/cellranger vdj --id=$4 --fastqs=fastq --reference=~/cellranger/$2
+~/cellranger/cellranger-4.0.0/cellranger vdj --id=$4 --fastqs=fastq --reference=/home/ubuntu/cellranger/$2
 
 #wipe out temporary files as those cause nothing but trouble
 ls -d $4/* | grep -v 'outs' | xargs rm -r

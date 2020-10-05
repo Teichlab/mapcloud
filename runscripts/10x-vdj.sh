@@ -4,12 +4,7 @@ set -e
 #set your file type here: cram or fastq
 FILETYPE=cram
 #set your reference here: GRCh38-VDJ
-REFERENCE=GRCh38-VDJ
-#set your VCF creation here (ignore if you're not doing the genotyping): 
-#0 to use all the protein coding SNPs,
-#a nonzero integer to use the SNPs for the top N expressed genes for your sample,
-#a file path to use the SNPs from that file
-VCF=1000
+REFERENCE=GRCh38-VDJ-4.0.0
 
 #loop over all the samples you want mapped
 for SAMPLE in 
