@@ -47,3 +47,42 @@ cat GRCh38/genemap.tsv ERCC92/genemap.tsv > GRCh38-ERCC/genemap.tsv
 cat GRCm38/genemap.tsv ERCC92/genemap.tsv > GRCm38-ERCC/genemap.tsv
 #that's all we needed from the helper scripts
 sudo rm -r ~/mapcloud
+
+#OLD CELLRANGER. now just roll with 4.0.0
+#cellranger prep! ho! version 2.0.2 with a GRCh38 1.2.0 reference, plus also mm10 and ERCC
+#(and also set up 2.1.1 with the official VDJ download for VDJ purposes)
+mkdir ~/cellranger && cd ~/cellranger
+#originally this would be downloaded from 10X themselves, but they don't offer archival downloads
+rsync -P <user-id>@farm3-login.internal.sanger.ac.uk:/software/solexa/pkg/cellranger/2.0.2/dist/cellranger-2.0.2.tar.gz .
+rsync -P <user-id>@farm3-login.internal.sanger.ac.uk:/software/solexa/pkg/cellranger/2.1.1/dist/cellranger-2.1.1.tar.gz .
+rsync -P <user-id>@farm3-login.internal.sanger.ac.uk:/software/solexa/pkg/cellranger/3.0.2/dist/cellranger-3.0.2.tar.gz .
+rsync -P <user-id>@farm3-login.internal.sanger.ac.uk:/nfs/srpipe_references/downloaded_from_10X/refdata-cellranger-GRCh38-1.2.0.tar.gz.download GRCh38.tar.gz
+rsync -P <user-id>@farm3-login.internal.sanger.ac.uk:/nfs/srpipe_references/downloaded_from_10X/refdata-cellranger-mm10-1.2.0.tar.gz.download mm10.tar.gz
+rsync -P <user-id>@farm3-login.internal.sanger.ac.uk:/nfs/srpipe_references/downloaded_from_10X/refdata-cellranger-ercc92-1.2.0.tar.gz.download ercc92.tar.gz
+tar -xzvf cellranger-2.0.2.tar.gz && tar -xzvf cellranger-2.1.1.tar.gz && tar -xzvf cellranger-3.0.2.tar.gz
+tar -xzvf GRCh38.tar.gz && tar -xzvf mm10.tar.gz && tar -xzvf ercc92.tar.gz && sudo rm *.tar.gz
+curl -O http://cf.10xgenomics.com/supp/cell-vdj/refdata-cellranger-vdj-GRCh38-alts-ensembl-2.0.0.tar.gz
+tar -xzvf refdata-cellranger-vdj-GRCh38-alts-ensembl-2.0.0.tar.gz && rm refdata-cellranger-vdj-GRCh38-alts-ensembl-2.0.0.tar.gz
+#move the references to folders with shorter names for ease of script access later
+mv refdata-cellranger-GRCh38-1.2.0/ GRCh38/
+mv refdata-cellranger-mm10-1.2.0/ mm10/
+mv refdata-cellranger-ercc92-1.2.0/ ERCC/
+mv refdata-cellranger-vdj-GRCh38-alts-ensembl-2.0.0/ GRCh38-VDJ/
+
+#ERCC GENEMAP STUFF.
+#ERCCs don't get to have a complicated gtf, so need to build the genemap/genenames a little different
+mkdir ERCC && cd ERCC
+gffread -w transcripts.fa -g ~/cellranger/ERCC/fasta/genome.fa ~/cellranger/ERCC/genes/genes.gtf
+grep -P '\texon\t' ~/cellranger/$REF/genes/genes.gtf | sed -r 's/.*gene_id "([^"]+)".*transcript_id "([^"]+)".*/\2\t\1/' > genemap.tsv
+cp genemap.tsv genenames.tsv
+
+#OLD SPATIAL. now just roll with visium as this got antiquated.
+#spatial transcriptomics! along with matplotlibby/tk'y dependencies it doesn't bother to tell you about!
+sudo pip install stpipeline matplotlib
+sudo apt-get -y install python-tk
+#make st-qa.py use matplotlib in Agg mode
+sudo sed '0,/^[^#]/{s/\(^[^#]\)/import matplotlib\nmatplotlib.use("Agg")\n\1/}' -i /usr/local/bin/st_qa.py
+#this needs a new'ish STAR
+cd ~ && wget https://github.com/alexdobin/STAR/archive/2.5.4b.tar.gz
+tar -xzvf 2.5.4b.tar.gz && rm 2.5.4b.tar.gz
+#for stpipeline purposes, STAR is in ~/STAR-2.5.4b/bin/Linux_x86_64/STAR
