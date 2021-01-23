@@ -76,9 +76,17 @@ rm -f *.cram
 IMAGE=`grep $5 $3 | cut -f 2 -d ,`
 if [[ `head -n 1 $3 | tr -cd , | wc -c` == 3 ]]
 then
+	#standard metadata file
 	SLIDE=`grep $5 $3 | cut -f 3 -d ,`
 	AREA=`grep $5 $3 | cut -f 4 -d ,`
 	~/cellranger/spaceranger-1.1.0/spaceranger count --id=$5 --fastqs=fastq --transcriptome=/home/ubuntu/cellranger/$2 --reorient-images --image=$IMAGE --slide=$SLIDE --area=$AREA
+elif [[ `head -n 1 $3 | tr -cd , | wc -c` == 4 ]]
+then
+	#extra column for manual alignment
+	SLIDE=`grep $5 $3 | cut -f 3 -d ,`
+	AREA=`grep $5 $3 | cut -f 4 -d ,`
+	ALIGNMENT=`grep $5 $3 | cut -f 5 -d ,`
+	~/cellranger/spaceranger-1.1.0/spaceranger count --id=$5 --fastqs=fastq --transcriptome=/home/ubuntu/cellranger/$2 --image=$IMAGE --slide=$SLIDE --area=$AREA --loupe-alignment=$ALIGNMENT
 else
 	#sometimes people drop the ball and don't save the slide serial number
 	~/cellranger/spaceranger-1.1.0/spaceranger count --id=$5 --fastqs=fastq --transcriptome=/home/ubuntu/cellranger/$2 --reorient-images --image=$IMAGE --unknown-slide

@@ -13,6 +13,7 @@ META=meta.csv
 #	- second column image name (placed in the directory at the same level as the runscript)
 #	- third column slide serial number
 #	- fourth column spot location (A1/B1/C1/D1)
+#	(- fifth column - optionally manual alignment if too few keypoints detected error happens otherwise)
 
 
 #loop over all the samples you want mapped
