@@ -3,7 +3,18 @@ set -e
 
 #run with 10X/10X-VDJ/SS2 as the first argument and the sample/runlane as the second argument
 
-iput -Kr $2 /archive/HCA/$1
+#so this used to work but no longer does thanks to irods 4.2.7 being buggy
+#iput -Kr $2 /archive/HCA/$1
+#need to upload the nested structure manually. thankfully this is possible. loop over files
+for FID in `find $2 -type f`
+do
+	#extract the relative path to the file, sans file name
+	RELPATH=`dirname $FID`
+	#create the path on irods. imkdir -p won't error if the path already exists
+	imkdir -p /archive/HCA/$1/$RELPATH
+	#upload the file
+	iput -K $FID /archive/HCA/$1/$RELPATH
+done
 if [ $1 == 'SS2' ]
 then
 	imeta addw -d /archive/HCA/$1/$2/%/% target mapcloud
