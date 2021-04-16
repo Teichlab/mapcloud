@@ -36,6 +36,8 @@ imeta qu -z seq -d sample = $SAMPLE and type = cram and target = 1 >> imeta.sh
 #(can skip the -K for run time as will check md5sums later)
 sed ':a;N;$!ba;s/----\ncollection:/iget/g' -i imeta.sh
 sed ':a;N;$!ba;s/\ndataObj: /\//g' -i imeta.sh
+#clean up the imeta by kicking out *#888.crams and yhumans
+grep -v "#888.cram\|yhuman" imeta.sh > temp.sh && mv temp.sh imeta.sh
 bash imeta.sh
 for IRPATH in `grep "iget" imeta.sh | sed "s/iget //"`
 do
@@ -48,7 +50,8 @@ do
 		exit 1
 	fi
 done
-rm imeta.sh && rm -f *#888.cram
+rm imeta.sh
+#convert to FASTQ and collapse
 parallel bash /mnt/mapcloud/scripts/10x/cramfastq.sh ::: *.cram
 cat *R1_001.fastq.gz > R1.fastq.gz
 cat *R2_001.fastq.gz > R2.fastq.gz
