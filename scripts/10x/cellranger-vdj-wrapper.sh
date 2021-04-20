@@ -24,17 +24,30 @@ fi
 #a couple quick substitutions to actually turn the imeta dump into a bunch of igets
 #turn all '----\ncollection:' into 'iget'
 #turn all '\ndataObj: ' into '/'
-sed ':a;N;$!ba;s/----\ncollection:/iget -K/g' -i imeta.sh
+sed ':a;N;$!ba;s/----\ncollection:/iget/g' -i imeta.sh
 sed ':a;N;$!ba;s/\ndataObj: /\//g' -i imeta.sh
+
+#clean up the download list by removing all weird viral (888) and yhuman stuff
+grep -v "#888.cram\|yhuman" imeta.sh > temp.sh && mv temp.sh imeta.sh
 
 #time to get downloading
 bash imeta.sh
 
+#assert that the md5sums are in order (irods nominally has -K, but this feels safer)
+for IRPATH in `grep "iget" imeta.sh | sed "s/iget //"`
+do
+	FID=`basename $IRPATH`
+	MD5LOCAL=`md5sum $FID| cut -f -1 -d " "`
+	MD5IRODS=`imeta ls -d $IRPATH md5 | grep 'value:' | sed 's/value: //'`
+	if [ $MD5LOCAL != $MD5IRODS ]
+	then
+		echo "md5sum conflict encountered for $FID"
+		exit 1
+	fi
+done
+
 #and now that it's downloaded, we can dispose of it
 rm imeta.sh
-
-#kick out the unmapped as we don't care; -f so that this doesn't break if this file doesn't exist
-rm -f *#888.cram
 
 if [[ $1 == cram ]]
 then

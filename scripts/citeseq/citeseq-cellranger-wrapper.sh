@@ -9,11 +9,23 @@ getfastq() {
 	#commence the CRAM download
 	printf '#!/bin/bash\nset -e\n\n----\n' > imeta.sh
 	imeta qu -z seq -d sample = $SAMPLE and type = cram and target = 1 >> imeta.sh
-	sed ':a;N;$!ba;s/----\ncollection:/iget -K/g' -i imeta.sh
+	sed ':a;N;$!ba;s/----\ncollection:/iget/g' -i imeta.sh
 	sed ':a;N;$!ba;s/\ndataObj: /\//g' -i imeta.sh
+	grep -v "#888.cram\|yhuman" imeta.sh > temp.sh && mv temp.sh imeta.sh
 	bash imeta.sh
+	#md5sums by hand
+	for IRPATH in `grep "iget" imeta.sh | sed "s/iget //"`
+	do
+		FID=`basename $IRPATH`
+		MD5LOCAL=`md5sum $FID| cut -f -1 -d " "`
+		MD5IRODS=`imeta ls -d $IRPATH md5 | grep 'value:' | sed 's/value: //'`
+		if [ $MD5LOCAL != $MD5IRODS ]
+		then
+			echo "md5sum conflict encountered for $FID"
+			exit 1
+		fi
+	done
 	rm imeta.sh
-	rm -f *#888.cram
 	#convert to FASTQ
 	parallel bash /mnt/mapcloud/scripts/10x/cramfastq.sh ::: *.cram
 	#rename to be cellranger compatible
@@ -48,7 +60,7 @@ echo $(pwd)"/fastq_gex,"$GEX",Gene Expression" >> libraries.csv
 echo $(pwd)"/fastq_cite,"$CITE,"Antibody Capture" >> libraries.csv
 
 #run cellranger itself
-~/cellranger/cellranger-4.0.0/cellranger count --id=$SAMPLES --libraries=libraries.csv --feature-ref=citeseq.csv --transcriptome=~/cellranger/$REFERENCE
+~/cellranger/cellranger-4.0.0/cellranger count --id=$SAMPLES --libraries=libraries.csv --feature-ref=citeseq.csv --transcriptome=/home/ubuntu/cellranger/$REFERENCE
 
 #wipe out temporary files as those cause nothing but trouble
 ls -d $SAMPLES/* | grep -v 'outs' | xargs rm -r
