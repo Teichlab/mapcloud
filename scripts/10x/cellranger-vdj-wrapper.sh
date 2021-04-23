@@ -6,20 +6,13 @@ set -e
 #	* $2 - GRCh38-VDJ, which reference to use
 #	* $3 - sample or sample_id (or id_run or whatever), which field are we checking
 #	* $4 - the value that we want to fish out
-#	* optionally, $5 and $6 for another pair
+#	* optionally, $5 to specify TR/IG chain
 
 #ok, time to get the imeta ball rolling
 #prepare the foundation for the imeta dump becoming a shell script with igets
-#and then obtain the imeta using the value pair(s) provided on input
+#and then obtain the imeta using the value pair provided on input
 printf '#!/bin/bash\nset -e\n\n----\n' > imeta.sh
-if [[ $# -eq 4 ]]
-then
-	imeta qu -z seq -d $3 = $4 and type = $1 and target = 1 >> imeta.sh
-fi
-if [[ $# -eq 6 ]]
-then
-	imeta qu -z seq -d $3 = $4 and $5 = $6 and type = $1 and target = 1 >> imeta.sh
-fi
+imeta qu -z seq -d $3 = $4 and type = $1 and target = 1 >> imeta.sh
 
 #a couple quick substitutions to actually turn the imeta dump into a bunch of igets
 #turn all '----\ncollection:' into 'iget'
@@ -84,7 +77,15 @@ mv *.fastq.gz fastq
 rm -f *.cram
 
 #cellranger proper!
-~/cellranger/cellranger-4.0.0/cellranger vdj --id=$4 --fastqs=fastq --reference=/home/ubuntu/cellranger/$2
+if [[ $# -eq 4 ]]
+then
+	~/cellranger/cellranger-4.0.0/cellranger vdj --id=$4 --fastqs=fastq --reference=/home/ubuntu/cellranger/$2
+fi
+if [[ $# -eq 5 ]]
+then
+	#force TR/IG chain
+	~/cellranger/cellranger-4.0.0/cellranger vdj --id=$4 --fastqs=fastq --reference=/home/ubuntu/cellranger/$2 --chain $5
+fi
 
 #wipe out temporary files as those cause nothing but trouble
 ls -d $4/* | grep -v 'outs' | xargs rm -r
