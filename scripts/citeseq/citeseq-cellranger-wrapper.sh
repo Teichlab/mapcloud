@@ -27,7 +27,7 @@ getfastq() {
 	done
 	rm imeta.sh
 	#convert to FASTQ
-	parallel bash /mnt/mapcloud/scripts/10x/cramfastq.sh ::: *.cram
+	parallel bash /mnt/mapcloud/scripts/10x/utils/cramfastq.sh ::: *.cram
 	#rename to be cellranger compatible
 	count=1
 	for file in *I1_001.fastq.gz

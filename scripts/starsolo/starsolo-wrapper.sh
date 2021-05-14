@@ -52,7 +52,7 @@ do
 done
 rm imeta.sh
 #convert to FASTQ and collapse
-parallel bash /mnt/mapcloud/scripts/10x/cramfastq.sh ::: *.cram
+parallel bash /mnt/mapcloud/scripts/10x/utils/cramfastq.sh ::: *.cram
 cat *R1_001.fastq.gz > R1.fastq.gz
 cat *R2_001.fastq.gz > R2.fastq.gz
 rm *cram* && cd ..
