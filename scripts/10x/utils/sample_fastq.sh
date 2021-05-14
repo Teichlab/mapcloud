@@ -45,6 +45,7 @@ parallel bash /mnt/mapcloud/scripts/10x/utils/cramfastq.sh ::: *.cram
 #and we want to turn it into SAMPLE_S##_L00#_I1_001.fastq.gz
 #we want the L to increment for each separate lot of CRAM files being processed
 #and the S to increment for each separate file within that given lane
+#(so from the example above, 22288_1 is the "L" and #1 is the "S")
 
 #one global lane counter
 lcount=1
