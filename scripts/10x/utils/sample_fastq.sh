@@ -49,7 +49,7 @@ parallel bash /mnt/mapcloud/scripts/10x/utils/cramfastq.sh ::: *.cram
 
 #one global lane counter
 lcount=1
-for LANE in `ls *.cram | cut -f 1 -d "#"`
+for LANE in `ls *.cram | cut -f 1 -d "#" | sort | uniq`
 do
 	#reset sample counter per lane
 	scount=1
