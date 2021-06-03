@@ -13,7 +13,7 @@ for SAMPLE in
 do
 	#run the general-cellranger-wrapper.sh pipeline
 	#optionally provide TR/IG as the chain to force if running VDJ
-	bash /mnt/mapcloud/scripts/10x/general-cellranger-wrapper.sh 
+	bash /mnt/mapcloud/scripts/10x/general-cellranger-wrapper.sh $VERSION $COMMAND $REFERENCE $SAMPLE
 	
 	#and now that we ran cellranger, we can toss it over to irods for storage
 	#the destination folder depends on whether this is VDJ or not
