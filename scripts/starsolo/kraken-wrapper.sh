@@ -9,18 +9,18 @@ CHEMISTRY=$3
 #translate chemistry to actual starsolo parameters
 if [[ $CHEMISTRY == "v2" ]]
 then
-	UMI=10
-	STRAND=Forward
+        UMI=10
+        STRAND=Forward
 elif [[ $CHEMISTRY == "v3" ]]
 then
-	UMI=12
-	STRAND=Forward
+        UMI=12
+        STRAND=Forward
 elif [[ $CHEMISTRY == "v2-5" ]]
 then
-	UMI=10
-	STRAND=Reverse
-	#set this to v2 for barcode purposes
-	CHEMISTRY=v2
+        UMI=10
+        STRAND=Reverse
+        #set this to v2 for barcode purposes
+        CHEMISTRY=v2
 fi
 
 #set up nested folder architecture to match /archive/HCA irods design
@@ -52,22 +52,16 @@ rm *.fastq.gz
 	--soloUMIfiltering MultiGeneUMI \
 	--soloCellFilter CellRanger2.2 3000 0.99 10 \
 	--soloFeatures Gene GeneFull Velocyto \
-	--soloOutFileNames logs/ genes.tsv barcodes.tsv matrix.mtx
+	--soloOutFileNames logs/ genes.tsv barcodes.tsv matrix.mtx \
+	--outSAMunmapped Within
 
-#starsolo's take on velocyto is a three value column mtx, with spliced, unspliced, ambiguous
-#in order to let downstream tools make use of it, split them up into the appropriate matrices
-head -n 3 logs/Velocyto/raw/matrix.mtx > logs/Velocyto/raw/spliced.mtx
-head -n 3 logs/Velocyto/raw/matrix.mtx > logs/Velocyto/raw/unspliced.mtx
-head -n 3 logs/Velocyto/raw/matrix.mtx > logs/Velocyto/raw/ambiguous.mtx
-tail -n +4 logs/Velocyto/raw/matrix.mtx | cut -f 1,2,3 -d ' ' >> logs/Velocyto/raw/spliced.mtx
-tail -n +4 logs/Velocyto/raw/matrix.mtx | cut -f 1,2,4 -d ' ' >> logs/Velocyto/raw/unspliced.mtx
-tail -n +4 logs/Velocyto/raw/matrix.mtx | cut -f 1,2,5 -d ' ' >> logs/Velocyto/raw/ambiguous.mtx
+#okay, that's as much as we need from this. delete FASTQs for space conservation
+rm -r fastq && cd ..
 
-#do various python'y things - cellranger 3 cell filter, scrublet, velocyto object
-python3 /mnt/mapcloud/scripts/starsolo/postprocess.py
-
-#reshuffle some files and run soupX
-mv logs counts && mkdir logs && mv counts/Barcodes.stats logs && mv Log.out logs && mv Log.progress.out logs && rm -r fastq
-Rscript /mnt/mapcloud/scripts/starsolo/soupx.R
-#for whatever reason this creates this empty, unnecessary file. kick it
-rm -f Rplots.pdf
+#kraken time!
+#went into the python file and changed the kraken path to /mnt/kraken2/kraken2
+python3 /mnt/mg2sc/src/scMeG-kraken.py --input starsolo/Aligned.sortedByCoord.out.bam \
+	--outdir kraken \
+	--DBpath /mnt/k2_standard_20201202 \
+	--threads `grep -c ^processor /proc/cpuinfo` \
+	--prefix metagenomics
