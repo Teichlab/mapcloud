@@ -59,9 +59,11 @@ rm *.fastq.gz
 rm -r fastq && cd ..
 
 #kraken time!
-#went into the python file and changed the kraken path to /mnt/kraken2/kraken2
 python3 /mnt/mg2sc/src/scMeG-kraken.py --input starsolo/Aligned.sortedByCoord.out.bam \
 	--outdir kraken \
 	--DBpath /mnt/k2_standard_20201202 \
 	--threads `grep -c ^processor /proc/cpuinfo` \
-	--prefix metagenomics
+	--prefix metagenomics \
+	--kraken /mnt/kraken2/kraken2
+#kick out the starsolo mapping and the kraken fastqs
+rm kraken/metagenomics_unmapped.fq && rm -r starsolo
