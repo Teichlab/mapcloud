@@ -12,7 +12,9 @@ REFERENCE=GRCh38-3.0.0
 for SAMPLE in 
 do
 	#run the general-cellranger-wrapper.sh pipeline
-	#optionally provide TR/IG as the chain to force if running VDJ
+	#optionally provide TR/GD/IG as the fifth argument to force chain if running VDJ
+	#(GD triggers dandelion reannotation of contigs)
+	#VDJ will use --inner-enrichment-primers=primers.txt if a primers.txt is found in the run folder
 	bash /mnt/mapcloud/scripts/10x/general-cellranger-wrapper.sh $VERSION $COMMAND $REFERENCE $SAMPLE
 	
 	#and now that we ran cellranger, we can toss it over to irods for storage
