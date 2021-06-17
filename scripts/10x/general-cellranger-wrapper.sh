@@ -68,6 +68,8 @@ then
 		#at this point we have hiconf files ready for dandelion ingestion and don't need hiconf.txt anymore
 		rm $SAMPLE/outs/hiconf.txt && cd $SAMPLE
 		singularity run -B $PWD ~/sc-dandelion_latest.sif dandelion-preprocess --chain TR --file_prefix hiconf --keep_trailing_hyphen_number
+		#rename outs to dandelion to signify this is different
+		mv outs dandelion
 	fi
 fi
 
