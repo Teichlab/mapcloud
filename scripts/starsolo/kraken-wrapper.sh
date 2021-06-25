@@ -27,7 +27,10 @@ fi
 mkdir $SAMPLE && cd $SAMPLE && mkdir starsolo && cd starsolo
 
 #start by getting the FASTQs
-bash /mnt/mapcloud/scripts/10x/utils/sample_fastq.sh $SAMPLE
+#this might be a CITE ID. split on "-" and take the first part
+#if not CITE, this operation will change nothing
+GEX=`echo $SAMPLE | sed 's/-.*//'`
+bash /mnt/mapcloud/scripts/10x/utils/sample_fastq.sh $GEX
 #collapse to single R1/R2. I1 not even ingested
 mkdir fastq
 cat *R1_001.fastq.gz > fastq/R1.fastq.gz
