@@ -61,7 +61,7 @@ then
 	if [[ $5 == "GD" ]]
 	then
 		#identify high confidence contigs, cell status be damned
-		cut -f3-4 -d, $SAMPLE/outs/all_contig_annotations.csv | grep True | cut -f1 -d, > $SAMPLE/outs/hiconf.txt
+		cut -f3-4 -d, $SAMPLE/outs/all_contig_annotations.csv | grep -i True | cut -f1 -d, > $SAMPLE/outs/hiconf.txt
 		head -n 1 $SAMPLE/outs/all_contig_annotations.csv > $SAMPLE/outs/hiconf_contig_annotations.csv
 		grep -f $SAMPLE/outs/hiconf.txt $SAMPLE/outs/all_contig_annotations.csv >> $SAMPLE/outs/hiconf_contig_annotations.csv 
 		grep -A1 --no-group-separator -f $SAMPLE/outs/hiconf.txt $SAMPLE/outs/all_contig.fasta > $SAMPLE/outs/hiconf_contig.fasta
