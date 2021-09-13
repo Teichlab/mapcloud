@@ -5,12 +5,24 @@ set -e
 #and making the nomenclature be compatible with cellranger's expectations
 
 #run with one positional argument - the sample ID
-SAMPLE=$1
+SAMPLE="$1"
+#if a second argument is encountered, it's the library type
+#(just the part after Chromium single cell)
+if [[ $# -eq 2 ]]
+then
+	LIBRARY="Chromium single cell $2"
+fi
 
 #acquire FASTQs via standard 10x proceedings
 #start by querying iRODS for the sample's CRAMs
 printf '#!/bin/bash\nset -e\n\n----\n' > imeta.sh
-imeta qu -z seq -d sample = $SAMPLE and type = cram and target = 1 >> imeta.sh
+#we may or may not need to include a library type
+if [[ $# -eq 2 ]]
+then
+	imeta qu -z seq -d sample = $SAMPLE and library_type = $LIBRARY and target = 1 >> imeta.sh
+else
+	imeta qu -z seq -d sample = $SAMPLE and type = cram and target = 1 >> imeta.sh
+fi
 #this used to be -iget -K, but there have been some bizarre ghost errors early Q2 2021
 #yielding irreproducible borked reads at a rare rate without scripts breaking
 #so as a precaution, do a manual md5sum check instead, just in case it's a ghost irods error
