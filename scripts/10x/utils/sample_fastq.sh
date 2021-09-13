@@ -15,24 +15,29 @@ fi
 
 #acquire FASTQs via standard 10x proceedings
 #start by querying iRODS for the sample's CRAMs
-printf '#!/bin/bash\nset -e\n\n----\n' > imeta.sh
+printf '----\n' > holder.sh
 #we may or may not need to include a library type
 if [[ $# -eq 2 ]]
 then
-	imeta qu -z seq -d sample = $SAMPLE and library_type = $LIBRARY and target = 1 >> imeta.sh
+	imeta qu -z seq -d sample = $SAMPLE and library_type = $LIBRARY and target = 1 >> holder.sh
 else
-	imeta qu -z seq -d sample = $SAMPLE and type = cram and target = 1 >> imeta.sh
+	imeta qu -z seq -d sample = $SAMPLE and type = cram and target = 1 >> holder.sh
 fi
 #this used to be -iget -K, but there have been some bizarre ghost errors early Q2 2021
 #yielding irreproducible borked reads at a rare rate without scripts breaking
 #so as a precaution, do a manual md5sum check instead, just in case it's a ghost irods error
 #(can skip the -K for run time as will check md5sums later)
-sed ':a;N;$!ba;s/----\ncollection:/iget/g' -i imeta.sh
-sed ':a;N;$!ba;s/\ndataObj: /\//g' -i imeta.sh
+sed ':a;N;$!ba;s/----\ncollection:/iget/g' -i holder.sh
+sed ':a;N;$!ba;s/\ndataObj: /\//g' -i holder.sh
 #clean up the imeta by kicking out *#888.crams and yhumans
-grep -v "#888.cram\|yhuman" imeta.sh > temp.sh && mv temp.sh imeta.sh
+grep -v "#888.cram\|yhuman" holder.sh > temp.sh && mv temp.sh holder.sh
+#make sure that it's all crams though
+grep ".cram" holder.sh > temp.sh && mv temp.sh holder.sh
 
 #actually download the files
+printf '#!/bin/bash\nset -e\n\n' > imeta.sh
+cat holder.sh >> imeta.sh
+rm holder.sh
 bash imeta.sh
 
 #do the md5sum check
