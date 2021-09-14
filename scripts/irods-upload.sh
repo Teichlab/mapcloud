@@ -30,8 +30,8 @@ else
 	#this apparently throws silent errors despite working in irods 4.2.7!
 	imeta addw -d /archive/HCA/$1/$2$SUB/%/% target mapcloud || echo "irods silent meta error"
 	imeta addw -d /archive/HCA/$1/$2$SUB/%/% sample $2 || echo "irods silent meta error"
-	#cite hotfix - it's actually two samples in one! split on "-" and take first one
-	SAMPLE=`echo $2 | sed "s/-.*//"`
+	#cite hotfix - it's actually two samples in one! split on "+" and take first one
+	SAMPLE=`echo $2 | sed "s/+.*//"`
 	studyid=`imeta qu -z seq -d sample = $SAMPLE and type = cram and target = 1 | head -n 2 | sed 's/collection:/ls -d/' | sed ':a;N;$!ba;s/\ndataObj: /\//g' | xargs imeta | grep -A1 'attribute: study_id' | tail -n 1 | sed 's/value: //'`
 fi
 ichmod -r own kp9#Sanger1 /archive/HCA/$1/$2
