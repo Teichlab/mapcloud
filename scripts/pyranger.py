@@ -15,6 +15,13 @@ def parse_args():
 	parser.add_argument('--dry', dest='dry', action='store_true', help='Flag. If provided, will just print the commands that will be called rather than running them.')
 	args = parser.parse_args()
 	#TODO: sanity check input
+	#have VDJ chain set based on library_type, if applicable and necessary
+	if args.library_type is not None:
+		if args.chain is None:
+			if args.library_type == 'TCR':
+				args.chain = 'TR'
+			elif args.library_type == 'BCR':
+				args.chain = 'IG'
 	return args
 
 def runcommand(command, dry):
