@@ -100,7 +100,7 @@ def main():
 				#TODO: infer chain from output and move output
 				1+1
 		#clean up fastqs
-		runcommand('rm -rf fastq && rm -rf fastq_gex && rm -rf fastq_cite && rm -f libraries.csv, args.dry)
+		runcommand('rm -rf fastq && rm -rf fastq_gex && rm -rf fastq_cite && rm -f libraries.csv', args.dry)
 		#upload time... if we're to do so
 		if not args.no_upload:
 			if args.command == 'count':
