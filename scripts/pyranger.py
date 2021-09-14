@@ -1,4 +1,5 @@
 import argparse
+import sys
 import os
 
 def parse_args():
@@ -28,7 +29,12 @@ def runcommand(command, dry):
 	if dry:
 		print(command)
 	else:
-		os.system(command)
+		#check that the command ran fine
+		code = os.system(command)
+		if code != 0:
+			#we encountered an error
+			sys.stderr.write('Error encountered while running: '+command)
+			sys.exit(1)
 
 def make_fastqs(sample, args, dest='fastq'):
 	command = 'bash /mnt/mapcloud/scripts/10x/utils/sample_fastq.sh '+sample
