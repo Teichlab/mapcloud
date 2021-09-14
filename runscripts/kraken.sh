@@ -1,5 +1,5 @@
 #!/bin/bash
-set -e
+set -eo pipefail
 
 #set reference here. must be present as a star index folder in ~/STAR-2.7.3a
 REFERENCE=GRCh38-3.0.0

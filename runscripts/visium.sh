@@ -1,5 +1,5 @@
 #!/bin/bash
-set -e
+set -eo pipefail
 
 #set your file type here: cram or fastq
 FILETYPE=cram

@@ -1,5 +1,5 @@
 #!/bin/bash
-set -e
+set -eo pipefail
 
 #run with the sample name as the sole positional argument
 SAMPLE=$1

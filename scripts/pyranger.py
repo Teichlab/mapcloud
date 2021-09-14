@@ -29,8 +29,9 @@ def runcommand(command, dry):
 	if dry:
 		print(command)
 	else:
+		#add pipefail just in case something goes wrong
+		code = os.system('set -eo pipefail; '+command)
 		#check that the command ran fine
-		code = os.system(command)
 		if code != 0:
 			#we encountered an error
 			sys.stderr.write('Error encountered while running: '+command)

@@ -1,5 +1,5 @@
 #!/bin/bash
-set -e
+set -eo pipefail
 
 #four (or six) positional arguments on launch, 3 onwards for use on the imeta call
 #	* $1 - fastq or cram, depending on what file to get from irods

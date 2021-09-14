@@ -1,5 +1,5 @@
 #!/bin/bash
-set -e
+set -eo pipefail
 
 #a script for downloading the CRAMs of a given sample, converting them to FASTQ, 
 #and making the nomenclature be compatible with cellranger's expectations

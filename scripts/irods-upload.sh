@@ -1,5 +1,5 @@
 #!/bin/bash
-set -e
+set -eo pipefail
 
 #run with 10X/10X-VDJ/SS2 as the first argument and the sample/runlane as the second argument
 

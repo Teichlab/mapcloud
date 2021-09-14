@@ -1,5 +1,5 @@
 #!/bin/bash
-set -e
+set -eo pipefail
 
 #run with three positional arguments, like so:
 SAMPLE=$1
