@@ -74,7 +74,7 @@ def main():
 		if args.command == 'count':
 			command = command + ' --transcriptome=/home/ubuntu/cellranger/'+args.reference
 		elif args.command == 'vdj':
-			command = command + ' --refererence=/home/ubuntu/cellranger/'+args.reference
+			command = command + ' --reference=/home/ubuntu/cellranger/'+args.reference
 			#is there a chain we need to pass/account for?
 			if args.chain is not None:
 				#if it's GD, pass TR
