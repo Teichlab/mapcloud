@@ -11,6 +11,7 @@ def parse_args():
 	parser.add_argument('--feature_ref', dest='feature_ref', type=str, default='features.csv', help='CITE only. Feature reference file to use. Must be present in folder. Default: features.csv')
 	parser.add_argument('--chain', dest='chain', type=str, help='VDJ only. Chain to force in Cellranger. GD triggers dandelion post-processing.')
 	parser.add_argument('--primers', dest='primers', type=str, help='VDJ only. File with inner enrichment primers. Must be present in folder.')
+	parser.add_argument('--no_upload', dest='no_upload', action='store_true', help='Flag. If provided, will not upload to iRODS and just keep the results on the drive.')
 	parser.add_argument('--dry', dest='dry', action='store_true', help='Flag. If provided, will just print the commands that will be called rather than running them.')
 	args = parser.parse_args()
 	#TODO: sanity check input
@@ -98,13 +99,16 @@ def main():
 			else:
 				#TODO: infer chain from output and move output
 				1+1
-		#upload time
-		if args.command == 'count':
-			runcommand('bash /mnt/mapcloud/scripts/irods-upload.sh 10X '+sample, args.dry)
-		elif args.command == 'vdj':
-			runcommand('bash /mnt/mapcloud/scripts/irods-upload.sh 10X-VDJ '+sample, args.dry)
-		#clean up fastqs and mapping
-		runcommand('rm -rf fastq && rm -rf fastq_gex && rm -rf fastq_cite && rm -f libraries.csv && rm -rf '+sample, args.dry)
+		#clean up fastqs
+		runcommand('rm -rf fastq && rm -rf fastq_gex && rm -rf fastq_cite && rm -f libraries.csv, args.dry)
+		#upload time... if we're to do so
+		if not args.no_upload:
+			if args.command == 'count':
+				runcommand('bash /mnt/mapcloud/scripts/irods-upload.sh 10X '+sample, args.dry)
+			elif args.command == 'vdj':
+				runcommand('bash /mnt/mapcloud/scripts/irods-upload.sh 10X-VDJ '+sample, args.dry)
+			#clean up mapping
+			runcommand('rm -rf '+sample, args.dry)
 
 if __name__ == "__main__":
 	main()
