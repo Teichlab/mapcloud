@@ -30,7 +30,8 @@ def runcommand(command, dry):
 		print(command)
 	else:
 		#add pipefail just in case something goes wrong
-		code = os.system('set -eo pipefail; '+command)
+		#(for this to work, need to specify bash like so)
+		code = os.system('#!/usr/bin/env bash; set -eo pipefail; '+command)
 		#check that the command ran fine
 		if code != 0:
 			#we encountered an error
