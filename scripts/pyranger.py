@@ -8,7 +8,7 @@ def parse_args():
 	parser.add_argument('--command', dest='command', type=str, required=True, help='Cellranger command (count/vdj) to run.')
 	parser.add_argument('--reference', dest='reference', type=str, required=True, help='Reference to use. Must be present as a folder in ~/cellranger.')
 	parser.add_argument('--version', dest='version', type=str, default='4.0.0', help='Cellranger version to use. Must be present as a folder in ~/cellranger. Default: 4.0.0')
-	parser.add_argument('--library_type', dest='library_type', type=str, help='Library type to specify during data download. Some sample IDs have multiple different libraries of different types associated with them.')
+	parser.add_argument('--library_type', dest='library_type', type=str, help='Library type to specify during data download. Some sample IDs have multiple libraries of different types associated with them. For CITE, provide two library types separated by "+".')
 	parser.add_argument('--feature_ref', dest='feature_ref', type=str, default='features.csv', help='CITE only. Feature reference file to use. Must be present in folder. Default: features.csv')
 	parser.add_argument('--chain', dest='chain', type=str, help='VDJ only. Chain to force in Cellranger. GD triggers dandelion post-processing.')
 	parser.add_argument('--primers', dest='primers', type=str, help='VDJ only. File with inner enrichment primers. Must be present in folder.')
@@ -42,7 +42,16 @@ def make_fastqs(sample, args, dest='fastq'):
 	command = 'bash /mnt/mapcloud/scripts/10x/utils/sample_fastq.sh '+sample
 	#account for library_type if it's there
 	if args.library_type is not None:
-		command = command + ' "'+args.library_type+'"' 
+		#is this CITE? judge by dest value
+		if dest == 'fastq_gex':
+			#GEX. take first of pair of library types
+			command = command + ' "'+args.library_type.split('+')[0]+'"' 
+		elif dest == 'fastq_cite':
+			#CITE. take second of pair of library types
+			command = command + ' "'+args.library_type.split('+')[1]+'"' 
+		else:
+			#no need to do any splitting, just roll with the thing
+			command = command + ' "'+args.library_type+'"' 
 	runcommand(command, args.dry)
 	#move to destination folder
 	runcommand('mkdir '+dest+' && mv *.fastq.gz '+dest, args.dry)
