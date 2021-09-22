@@ -111,7 +111,7 @@ def main():
 				command = command + ' --inner-enrichment-primers='+args.primers
 		#set chemistry if provided
 		if args.chemistry is not None:
-			command = commmand + ' --chemmistry='+args.chemistry
+			command = command + ' --chemistry='+args.chemistry
 		#that's the whole command set up
 		runcommand(command, args.dry)
 		#CITE requires repositioning of folder to plus-joined sample names
