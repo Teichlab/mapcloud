@@ -9,6 +9,7 @@ def parse_args():
 	parser.add_argument('--reference', dest='reference', type=str, required=True, help='Reference to use. Must be present as a folder in ~/cellranger.')
 	parser.add_argument('--version', dest='version', type=str, default='4.0.0', help='Cellranger version to use. Must be present as a folder in ~/cellranger. Default: 4.0.0')
 	parser.add_argument('--library_type', dest='library_type', type=str, help='Library type to specify during data download. Some sample IDs have multiple libraries of different types associated with them. For CITE, provide two library types separated by "+", potentially skipping one by leaving the side empty.')
+	parser.add_argument('--chemistry', dest='chemistry', type=str, help='10X chemistry argument to optionally pass to Cellranger.')
 	parser.add_argument('--feature_ref', dest='feature_ref', type=str, default='features.csv', help='CITE only. Feature reference file to use. Must be present in folder. Default: features.csv')
 	parser.add_argument('--chain', dest='chain', type=str, help='VDJ only. Chain to force in Cellranger. GD triggers dandelion post-processing.')
 	parser.add_argument('--primers', dest='primers', type=str, help='VDJ only. File with inner enrichment primers. Must be present in folder.')
@@ -35,7 +36,7 @@ def runcommand(command, dry):
 		#check that the command ran fine
 		if code != 0:
 			#we encountered an error
-			sys.stderr.write('Error encountered while running: '+command)
+			sys.stderr.write('Error encountered while running: '+command+'\n')
 			sys.exit(1)
 
 def make_fastqs(sample, args, dest='fastq'):
@@ -108,6 +109,9 @@ def main():
 			#are there primers?
 			if args.primers is not None:
 				command = command + ' --inner-enrichment-primers='+args.primers
+		#set chemistry if provided
+		if args.chemistry is not None:
+			command = commmand + ' --chemmistry='+args.chemistry
 		#that's the whole command set up
 		runcommand(command, args.dry)
 		#CITE requires repositioning of folder to plus-joined sample names
