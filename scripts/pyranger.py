@@ -2,21 +2,39 @@ import argparse
 import sys
 import os
 
+from braceexpand import braceexpand
+
 def parse_args():
 	parser = argparse.ArgumentParser()
-	parser.add_argument('--samples', dest='samples', type=argparse.FileType('r'), required=True, help='File with sample IDs to process, one ID (or pair of IDs separated with "+" for CITE) per line.')
+	parser.add_argument('--samples', dest='samples', type=str, required=True, help='Sample IDs to process. Can be either space-delimited IDs, with brace expansion supported, or a  file with one sample ID per line. For CITE samples, please provide the GEX and CITE sample IDs joined with a "+".')
 	parser.add_argument('--command', dest='command', type=str, required=True, help='Cellranger command (count/vdj) to run.')
 	parser.add_argument('--reference', dest='reference', type=str, required=True, help='Reference to use. Must be present as a folder in ~/cellranger.')
 	parser.add_argument('--version', dest='version', type=str, default='4.0.0', help='Cellranger version to use. Must be present as a folder in ~/cellranger. Default: 4.0.0')
-	parser.add_argument('--library_type', dest='library_type', type=str, help='Library type to specify during data download. Some sample IDs have multiple libraries of different types associated with them. For CITE, provide two library types separated by "+", potentially skipping one by leaving the side empty.')
+	parser.add_argument('--library-type', dest='library_type', type=str, help='Library type to specify during data download. Some sample IDs have multiple libraries of different types associated with them. For CITE, provide two library types separated by "+", potentially skipping one by leaving the side empty.')
 	parser.add_argument('--chemistry', dest='chemistry', type=str, help='10X chemistry argument to optionally pass to Cellranger.')
-	parser.add_argument('--feature_ref', dest='feature_ref', type=str, default='features.csv', help='CITE only. Feature reference file to use. Must be present in folder. Default: features.csv')
+	parser.add_argument('--feature-ref', dest='feature_ref', type=str, default='features.csv', help='CITE only. Feature reference file to use. Must be present in folder. Default: features.csv')
 	parser.add_argument('--chain', dest='chain', type=str, help='VDJ only. Chain to force in Cellranger. GD triggers dandelion post-processing.')
 	parser.add_argument('--primers', dest='primers', type=str, help='VDJ only. File with inner enrichment primers. Must be present in folder.')
-	parser.add_argument('--no_upload', dest='no_upload', action='store_true', help='Flag. If provided, will not upload to iRODS and just keep the results on the drive.')
+	parser.add_argument('--no-upload', dest='no_upload', action='store_true', help='Flag. If provided, will not upload to iRODS and just keep the results on the drive.')
 	parser.add_argument('--dry', dest='dry', action='store_true', help='Flag. If provided, will just print the commands that will be called rather than running them.')
 	args = parser.parse_args()
 	#TODO: sanity check input
+	#process sample input - is it a file?
+	if os.path.isfile(args.samples):
+		#it is a file. read its contents and prepare a list of IDs
+		with open(args.samples, 'r') as fid:
+			lines = fid.readlines()
+		#strip off the excess newlines at the end and that's that
+		args.samples = [i.rstrip() for i in lines]
+	else:
+		#it is not a file, it's a space-delimited list of IDs with brace expansion
+		#identify all the lumps that need to be fed into brace expansion
+		lumps = args.samples.split(' ')
+		#start a fresh list in args.samples and append it with per-lump output
+		args.samples = []
+		for lump in lumps:
+			for sample in braceexpand(lump):
+				args.samples.append(sample)
 	#have VDJ chain set based on library_type, if applicable and necessary
 	if args.library_type is not None:
 		if args.chain is None:
@@ -67,7 +85,6 @@ def main():
 	args = parse_args()
 	#loop over the samples
 	for sample in args.samples:
-		sample = sample.rstrip()
 		#start preparing the command
 		command = '/home/ubuntu/cellranger/cellranger-'+args.version+'/cellranger '+args.command
 		#download the fastqs
