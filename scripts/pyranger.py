@@ -21,10 +21,9 @@ def parse_args():
 	#TODO: sanity check input
 	#process sample input - is it a file?
 	if os.path.isfile(args.samples):
-		#it is a file. read its contents and prepare a list of IDs
+		#it is a file. read its contents and trim off newlines
 		with open(args.samples, 'r') as fid:
 			lines = fid.readlines()
-		#strip off the excess newlines at the end and that's that
 		args.samples = [i.rstrip() for i in lines]
 	else:
 		#it is not a file, it's a space-delimited list of IDs with brace expansion
