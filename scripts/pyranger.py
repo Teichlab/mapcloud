@@ -7,9 +7,9 @@ from braceexpand import braceexpand
 def parse_args():
 	parser = argparse.ArgumentParser()
 	parser.add_argument('--samples', dest='samples', type=str, required=True, help='Sample IDs to process. Can be either space-delimited IDs, with brace expansion supported, or a  file with one sample ID per line. For CITE samples, please provide the GEX and CITE sample IDs joined with a "+".')
+	parser.add_argument('--cellranger', dest='cellranger', type=str, required=True, help='Path to cellranger release to use.')
 	parser.add_argument('--command', dest='command', type=str, required=True, help='Cellranger command (count/vdj) to run.')
-	parser.add_argument('--reference', dest='reference', type=str, required=True, help='Reference to use. Must be present as a folder in ~/cellranger.')
-	parser.add_argument('--version', dest='version', type=str, default='4.0.0', help='Cellranger version to use. Must be present as a folder in ~/cellranger. Default: 4.0.0')
+	parser.add_argument('--reference', dest='reference', type=str, required=True, help='Path to cellranger reference to use.')
 	parser.add_argument('--library-type', dest='library_type', type=str, help='Library type to specify during data download. Some sample IDs have multiple libraries of different types associated with them. For CITE, provide two library types separated by "+", potentially skipping one by leaving the side empty.')
 	parser.add_argument('--chemistry', dest='chemistry', type=str, help='10X chemistry argument to optionally pass to Cellranger.')
 	parser.add_argument('--feature-ref', dest='feature_ref', type=str, default='features.csv', help='CITE only. Feature reference file to use. Default: features.csv')
@@ -19,7 +19,6 @@ def parse_args():
 	parser.add_argument('--dry', dest='dry', action='store_true', help='Flag. If provided, will just print the commands that will be called rather than running them.')
 	args = parser.parse_args()
 	#TODO: sanity check input
-	#TODO: cellranger/reference paths, with defaults inferred based on farm/openstack
 	#process sample input - is it a file?
 	if os.path.isfile(args.samples):
 		#it is a file. read its contents and trim off newlines
@@ -35,6 +34,14 @@ def parse_args():
 		for lump in lumps:
 			for sample in braceexpand(lump):
 				args.samples.append(sample)
+	#ensure that the cellranger/reference paths lack any ~ surprises
+	#(some cellrangers dislike that)
+	args.cellranger = os.path.expanduser(args.cellranger)
+	args.reference = os.path.expanduser(args.reference)
+	#args.cellranger needs to point all the way to the binary
+	#add the extra layer if it's just the folder
+	if args.cellranger.split('/')[-1] != 'cellranger':
+		args.cellranger = args.cellranger+'/cellranger'
 	#have VDJ chain set based on library_type, if applicable and necessary
 	if args.library_type is not None:
 		if args.chain is None:
@@ -89,7 +96,7 @@ def main():
 	#loop over the samples
 	for sample in args.samples:
 		#start preparing the command
-		command = '/home/ubuntu/cellranger/cellranger-'+args.version+'/cellranger '+args.command
+		command = args.cellranger+' '+args.command
 		#download the fastqs
 		#is this a CITE sample, so two IDs joined by "+"?
 		is_cite = False
@@ -116,9 +123,9 @@ def main():
 			command = command + ' --id='+sample+' --fastqs=fastq'
 		#count/vdj pass their arguments a little differently
 		if args.command == 'count':
-			command = command + ' --transcriptome=/home/ubuntu/cellranger/'+args.reference
+			command = command + ' --transcriptome='+args.reference
 		elif args.command == 'vdj':
-			command = command + ' --reference=/home/ubuntu/cellranger/'+args.reference
+			command = command + ' --reference='+args.reference
 			#is there a chain we need to pass/account for?
 			if args.chain is not None:
 				#if it's GD, pass TR
