@@ -10,11 +10,11 @@ def parse_args():
 	parser.add_argument('--cellranger', dest='cellranger', type=str, required=True, help='Path to cellranger release to use.')
 	parser.add_argument('--command', dest='command', type=str, required=True, help='Cellranger command (count/vdj) to run.')
 	parser.add_argument('--reference', dest='reference', type=str, required=True, help='Path to cellranger reference to use.')
-	parser.add_argument('--library-type', dest='library_type', type=str, help='Library type to specify during data download. Some sample IDs have multiple libraries of different types associated with them. For CITE, provide two library types separated by "+", potentially skipping one by leaving the side empty.')
-	parser.add_argument('--chemistry', dest='chemistry', type=str, help='10X chemistry argument to optionally pass to Cellranger.')
-	parser.add_argument('--feature-ref', dest='feature_ref', type=str, default='features.csv', help='CITE only. Feature reference file to use. Default: features.csv')
-	parser.add_argument('--chain', dest='chain', type=str, help='VDJ only. Chain to force in Cellranger. GD triggers dandelion post-processing.')
-	parser.add_argument('--primers', dest='primers', type=str, help='VDJ only. File with inner enrichment primers. Must be present in folder.')
+	parser.add_argument('--library-type', dest='library_type', type=str, help='Optional. Library type to specify during data download. Some sample IDs have multiple libraries of different types associated with them. For CITE, provide two library types separated by "+", potentially skipping one by leaving the side empty.')
+	parser.add_argument('--chemistry', dest='chemistry', type=str, help='Optional. 10X chemistry argument to pass to Cellranger.')
+	parser.add_argument('--feature-ref', dest='feature_ref', type=str, help='CITE only. Path to feature reference file to use.')
+	parser.add_argument('--chain', dest='chain', type=str, help='VDJ only. Optional. Chain to force in Cellranger. GD triggers dandelion post-processing.')
+	parser.add_argument('--primers', dest='primers', type=str, help='VDJ only. Optional. Path to file with inner enrichment primers.')
 	parser.add_argument('--no-upload', dest='no_upload', action='store_true', help='Flag. If provided, will not upload to iRODS and just keep the results on the drive.')
 	parser.add_argument('--dry', dest='dry', action='store_true', help='Flag. If provided, will just print the commands that will be called rather than running them.')
 	args = parser.parse_args()
@@ -34,7 +34,7 @@ def parse_args():
 		for lump in lumps:
 			for sample in braceexpand(lump):
 				args.samples.append(sample)
-	#ensure that the cellranger/reference paths lack any ~ surprises
+	#ensure that the cellranger/reference paths lack any "~" surprises
 	#(some cellrangers dislike that)
 	args.cellranger = os.path.expanduser(args.cellranger)
 	args.reference = os.path.expanduser(args.reference)
@@ -42,6 +42,12 @@ def parse_args():
 	#add the extra layer if it's just the folder
 	if args.cellranger.split('/')[-1] != 'cellranger':
 		args.cellranger = args.cellranger+'/cellranger'
+	#if the feature reference is unset, make sure none of the samples are CITE
+	if args.feature_ref is None:
+		#CITE samples will have a "+" in their IDs
+		if any("+" in sample for sample in args.samples):
+			sys.stderr.write('CITE samples present, --feature-ref needs to be set.\n')
+			sys.exit(1)
 	#have VDJ chain set based on library_type, if applicable and necessary
 	if args.library_type is not None:
 		if args.chain is None:
