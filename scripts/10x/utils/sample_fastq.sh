@@ -48,14 +48,16 @@ do
 	MD5IRODS=`imeta ls -d $IRPATH md5 | grep 'value:' | sed 's/value: //'`
 	if [ $MD5LOCAL != $MD5IRODS ]
 	then
-		echo "md5sum conflict encountered for $FID"
+		echo "md5sum conflict encountered for $FID" 1>&2
 		exit 1
 	fi
 done
 rm imeta.sh
 
+#CRAM to FASTQ conversion script is in the same folder as this one
+DIR=`dirname "$0"`
 #convert to FASTQ
-parallel bash /mnt/mapcloud/scripts/10x/utils/cramfastq.sh ::: *.cram
+parallel bash $DIR/cramfastq.sh ::: *.cram
 
 #rename the resulting FASTQ files to be cellranger input friendly
 #we're starting off with a file named like this: 22288_1#1.cram_I1_001.fastq.gz

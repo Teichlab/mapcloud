@@ -41,6 +41,9 @@ def parse_args():
 				args.chain = 'TR'
 			elif args.library_type == 'BCR':
 				args.chain = 'IG'
+	#set up path to mapcloud/scripts, i.e. where this is
+	#get the realpath to this file and then strip out the scripts.py at the end
+	args.location = '/'.join(os.path.realpath(__file__).split('/')[:-1])
 	return args
 
 def runcommand(command, dry):
@@ -57,7 +60,7 @@ def runcommand(command, dry):
 			sys.exit(1)
 
 def make_fastqs(sample, args, dest='fastq'):
-	command = 'bash /mnt/mapcloud/scripts/10x/utils/sample_fastq.sh '+sample
+	command = 'bash '+args.location+'/10x/utils/sample_fastq.sh '+sample
 	#account for library_type if it's there
 	if args.library_type is not None:
 		#is this CITE? judge by dest value
@@ -134,7 +137,7 @@ def main():
 		#and soupx post-processing
 		if is_cite:
 			runcommand('mv '+cr_cite_id+' '+sample, args.dry)
-			runcommand('Rscript /mnt/mapcloud/scripts/citeseq/soupx.R '+sample, args.dry)
+			runcommand('Rscript '+args.location+'/citeseq/soupx.R '+sample, args.dry)
 		#remove temporary cellranger files
 		runcommand("ls -d "+sample+"/* | grep -v 'outs' | xargs rm -r", args.dry)
 		#VDJ requires folder renaming, and possible GD postprocessing
@@ -142,7 +145,7 @@ def main():
 			if args.chain is not None:
 				if args.chain == 'GD':
 					#GD postprocessing, renames folder to dandelion
-					runcommand('bash /mnt/mapcloud/scripts/10x/dandelion.sh '+sample, args.dry)
+					runcommand('bash '+args.location+'/10x/dandelion.sh '+sample, args.dry)
 				else:
 					#chain is not empty, so we forced a chain. move folder
 					runcommand('mv '+sample+'/outs '+sample+'/'+args.chain.lower(), args.dry)
@@ -154,9 +157,9 @@ def main():
 		#upload time... if we're to do so
 		if not args.no_upload:
 			if args.command == 'count':
-				runcommand('bash /mnt/mapcloud/scripts/irods-upload.sh 10X '+sample, args.dry)
+				runcommand('bash '+args.location+'/irods-upload.sh 10X '+sample, args.dry)
 			elif args.command == 'vdj':
-				runcommand('bash /mnt/mapcloud/scripts/irods-upload.sh 10X-VDJ '+sample, args.dry)
+				runcommand('bash '+args.location+'/irods-upload.sh 10X-VDJ '+sample, args.dry)
 			#clean up mapping
 			runcommand('rm -rf '+sample, args.dry)
 
