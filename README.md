@@ -1,5 +1,7 @@
 # Mapping/genotyping Teichlab computational cloud
 
+### Antiquated code repo
+
 This bit of text is going to detail the second available cloud snapshot, mapcloud, which builds upon [basecloud](https://github.com/Teichlab/basecloud) to include tools for analysing 10X/SS2/bulk/spatial transcriptomics data, both in terms of regular mapping/quantification and genotyping cells potentially from multiple donors. If you aren't familiar with basecloud, visit its repository first - it features a borderline excessive tutorial on using OpenStack, and everything in there carries over to here. The stuff exclusive to mapcloud is:
 
 * **Cell Ranger** (v2.0.2 for 3'v2 internal consistency, v2.1.1 for VDJ and 5', v3.0.2 for 3'v3) plus references: 10X GRCh38, mm10 and ERCC 1.2.0 releases, GRCh38 2.0.0 VDJ reference
