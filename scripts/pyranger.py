@@ -145,6 +145,7 @@ def main():
 			if args.chain is not None:
 				if args.chain == 'GD':
 					#GD postprocessing, renames folder to dandelion
+					#TODO: specify location of dandelion container
 					runcommand('bash '+args.location+'/10x/dandelion.sh '+sample, args.dry)
 				else:
 					#chain is not empty, so we forced a chain. move folder
