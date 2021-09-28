@@ -19,6 +19,7 @@ def parse_args():
 	parser.add_argument('--dry', dest='dry', action='store_true', help='Flag. If provided, will just print the commands that will be called rather than running them.')
 	args = parser.parse_args()
 	#TODO: sanity check input
+	#TODO: cellranger/reference paths, with defaults inferred based on farm/openstack
 	#process sample input - is it a file?
 	if os.path.isfile(args.samples):
 		#it is a file. read its contents and trim off newlines
