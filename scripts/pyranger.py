@@ -12,7 +12,7 @@ def parse_args():
 	parser.add_argument('--version', dest='version', type=str, default='4.0.0', help='Cellranger version to use. Must be present as a folder in ~/cellranger. Default: 4.0.0')
 	parser.add_argument('--library-type', dest='library_type', type=str, help='Library type to specify during data download. Some sample IDs have multiple libraries of different types associated with them. For CITE, provide two library types separated by "+", potentially skipping one by leaving the side empty.')
 	parser.add_argument('--chemistry', dest='chemistry', type=str, help='10X chemistry argument to optionally pass to Cellranger.')
-	parser.add_argument('--feature-ref', dest='feature_ref', type=str, default='features.csv', help='CITE only. Feature reference file to use. Must be present in folder. Default: features.csv')
+	parser.add_argument('--feature-ref', dest='feature_ref', type=str, default='features.csv', help='CITE only. Feature reference file to use. Default: features.csv')
 	parser.add_argument('--chain', dest='chain', type=str, help='VDJ only. Chain to force in Cellranger. GD triggers dandelion post-processing.')
 	parser.add_argument('--primers', dest='primers', type=str, help='VDJ only. File with inner enrichment primers. Must be present in folder.')
 	parser.add_argument('--no-upload', dest='no_upload', action='store_true', help='Flag. If provided, will not upload to iRODS and just keep the results on the drive.')
