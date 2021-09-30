@@ -15,6 +15,7 @@ def parse_args():
 	parser.add_argument('--feature-ref', dest='feature_ref', type=str, help='CITE only. Path to feature reference file to use.')
 	parser.add_argument('--chain', dest='chain', type=str, help='VDJ only. Optional. Chain to force in Cellranger. GD triggers dandelion post-processing.')
 	parser.add_argument('--primers', dest='primers', type=str, help='VDJ only. Optional. Path to file with inner enrichment primers.')
+	parser.add_argument('--dandelion', dest='dandelion', type=str, help='VDJ only. Path to dandelion singularity container if chain is set to GD.')
 	parser.add_argument('--no-upload', dest='no_upload', action='store_true', help='Flag. If provided, will not upload to iRODS and just keep the results on the drive.')
 	parser.add_argument('--dry', dest='dry', action='store_true', help='Flag. If provided, will just print the commands that will be called rather than running them.')
 	args = parser.parse_args()
@@ -55,6 +56,11 @@ def parse_args():
 				args.chain = 'TR'
 			elif args.library_type == 'BCR':
 				args.chain = 'IG'
+	#do we have the dandelion container, if we need to use it?
+	if args.chain == 'GD':
+		if args.dandelion is None:
+			sys.stderr.write('GD samples present, --dandelion needs to be set.\n')
+			sys.exit(1)
 	#set up path to mapcloud/scripts, i.e. where this is
 	#get the realpath to this file and then strip out the scripts.py at the end
 	args.location = '/'.join(os.path.realpath(__file__).split('/')[:-1])
@@ -159,8 +165,7 @@ def main():
 			if args.chain is not None:
 				if args.chain == 'GD':
 					#GD postprocessing, renames folder to dandelion
-					#TODO: specify location of dandelion container
-					runcommand('bash '+args.location+'/10x/dandelion.sh '+sample, args.dry)
+					runcommand('bash '+args.location+'/10x/dandelion.sh '+sample+' '+args.dandelion, args.dry)
 				else:
 					#chain is not empty, so we forced a chain. move folder
 					runcommand('mv '+sample+'/outs '+sample+'/'+args.chain.lower(), args.dry)
