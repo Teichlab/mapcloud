@@ -4,3 +4,4 @@ conda install -c conda-forge parallel
 conda install -c bioconda samtools
 conda install -c bioconda biobambam
 conda install -c conda-forge braceexpand
+conda install -c conda-forge r-soupx
