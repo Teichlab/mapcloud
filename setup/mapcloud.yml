@@ -1,0 +1,22 @@
+#build the environment: conda env create --file mapcloud.yml
+name: mapcloud
+channels:
+  - bioconda
+  - conda-forge
+dependencies:
+  - biobambam
+  - parallel
+  - pip
+  - r-soupx
+  - samtools
+  - singularity
+  - pip:
+    - annoy==1.16.3
+    - braceexpand
+    - docopt
+    - emptydrops==0.0.3
+    - pysam
+    - regex
+    - scanpy
+    - scrublet
+    - statsmodels
