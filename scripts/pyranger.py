@@ -6,7 +6,7 @@ from braceexpand import braceexpand
 
 def parse_args():
 	parser = argparse.ArgumentParser()
-	parser.add_argument('--samples', dest='samples', type=str, required=True, help='Sample IDs to process. Can be either space-delimited IDs, with brace expansion supported, or a  file with one sample ID per line. For CITE samples, please provide the GEX and CITE sample IDs joined with a "+".')
+	parser.add_argument('--samples', dest='samples', type=str, required=True, help='Sample IDs to process. Can be either space-delimited IDs, with brace expansion supported, or a  file with one sample ID per line. For CITE samples, please provide the GEX and CITE sample IDs joined with a "+"; brace expansion can be resolved on the IDs in parallel.')
 	parser.add_argument('--cellranger', dest='cellranger', type=str, required=True, help='Path to cellranger release to use.')
 	parser.add_argument('--command', dest='command', type=str, required=True, help='Cellranger command (count/vdj) to run.')
 	parser.add_argument('--reference', dest='reference', type=str, required=True, help='Path to cellranger reference to use.')
@@ -33,8 +33,15 @@ def parse_args():
 		#start a fresh list in args.samples and append it with per-lump output
 		args.samples = []
 		for lump in lumps:
-			for sample in braceexpand(lump):
-				args.samples.append(sample)
+			#is this a CITE lump? judge by presence of "+"
+			if "+" in lump:
+				#brace expansion on GEX and CITE separately
+				for gex, cite in zip(braceexpand(lump.split("+")[0]), braceexpand(lump.split("+")[1])):
+					args.samples.append(gex+"+"+cite)
+			else:
+				#not CITE, one regular brace expansion will do
+				for sample in braceexpand(lump):
+					args.samples.append(sample)
 	#ensure that the cellranger/reference paths lack any "~" surprises
 	#(some cellrangers dislike that)
 	args.cellranger = os.path.expanduser(args.cellranger)
