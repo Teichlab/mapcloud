@@ -62,6 +62,11 @@ rm *.fastq.gz
 rm -r fastq && cd ..
 
 #kraken time!
+
+#script: https://github.com/julianeweller/mg2sc
+#DB: https://genome-idx.s3.amazonaws.com/kraken/k2_standard_20201202.tar.gz
+#hierarchy collapsing of output: /lustre/scratch117/cellgen/team205/kp9/jupyter/jw38/metagenomics-covid-check/
+
 python3 /mnt/mg2sc/src/scMeG-kraken.py --input starsolo/Aligned.sortedByCoord.out.bam \
 	--outdir kraken \
 	--DBpath /mnt/k2_standard_20201202 \
