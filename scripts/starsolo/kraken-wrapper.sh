@@ -65,6 +65,7 @@ rm -r fastq && cd ..
 
 #script: https://github.com/julianeweller/mg2sc
 #DB: https://genome-idx.s3.amazonaws.com/kraken/k2_standard_20201202.tar.gz
+#from site: https://benlangmead.github.io/aws-indexes/k2
 #hierarchy collapsing of output: /lustre/scratch117/cellgen/team205/kp9/jupyter/jw38/metagenomics-covid-check/
 
 python3 /mnt/mg2sc/src/scMeG-kraken.py --input starsolo/Aligned.sortedByCoord.out.bam \
