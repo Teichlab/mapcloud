@@ -63,6 +63,8 @@ rm -r fastq && cd ..
 
 #kraken time!
 
+#kraken: https://github.com/DerrickWood/kraken2
+#then installed from inside cloned repo: bash install_kraken.sh .
 #script: https://github.com/julianeweller/mg2sc
 #DB: https://genome-idx.s3.amazonaws.com/kraken/k2_standard_20201202.tar.gz
 #from site: https://benlangmead.github.io/aws-indexes/k2
