@@ -17,6 +17,7 @@ def parse_args():
 	parser.add_argument('--primers', dest='primers', type=str, help='VDJ only. Optional. Path to file with inner enrichment primers.')
 	parser.add_argument('--dandelion', dest='dandelion', type=str, help='VDJ only. Path to dandelion singularity container if chain is set to GD.')
 	parser.add_argument('--no-upload', dest='no_upload', action='store_true', help='Flag. If provided, will not upload to iRODS and just keep the results on the drive.')
+	parser.add_argument('--no-bams', dest='no_bams', action='store_true', help='Flag. If provided, will delete the BAM files from the mapping output.')
 	parser.add_argument('--dry', dest='dry', action='store_true', help='Flag. If provided, will just print the commands that will be called rather than running them.')
 	args = parser.parse_args()
 	#TODO: sanity check input
@@ -167,6 +168,9 @@ def main():
 			runcommand('Rscript '+args.location+'/citeseq/soupx.R '+sample, args.dry)
 		#remove temporary cellranger files
 		runcommand("ls -d "+sample+"/* | grep -v 'outs' | xargs rm -r", args.dry)
+		#potentially kick bams
+		if args.no_bams:
+			runcommand('rm '+sample+'/outs/*.bam', args.dry)
 		#VDJ requires folder renaming, and possible GD postprocessing
 		if args.command == 'vdj':
 			if args.chain is not None:
